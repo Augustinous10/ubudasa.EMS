@@ -1,0 +1,16 @@
+.dashboard {
+    padding: 20px;
+  }
+  
+  .dashboard h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+  }
+  

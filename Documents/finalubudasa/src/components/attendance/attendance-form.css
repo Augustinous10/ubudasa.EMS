@@ -1,0 +1,21 @@
+.attendance-form {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .attendance-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .attendance-form button {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+  }
+  

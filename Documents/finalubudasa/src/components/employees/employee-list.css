@@ -1,0 +1,12 @@
+.employee-list ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .employee-list li {
+    padding: 10px;
+    background: #fff;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  

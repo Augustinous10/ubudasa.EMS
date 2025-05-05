@@ -1,0 +1,29 @@
+.attendance-list-container {
+    padding: 20px;
+  }
+  
+  .attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .attendance-table th,
+  .attendance-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .upload-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .upload-btn:hover {
+    background-color: #45a049;
+  }
+  

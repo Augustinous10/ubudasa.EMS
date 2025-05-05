@@ -1,0 +1,23 @@
+.sidebar {
+    width: 220px;
+    background-color: var(--secondary-color);
+    height: calc(100vh - var(--header-height));
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin: 15px 0;
+  }
+  
+  .sidebar ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  

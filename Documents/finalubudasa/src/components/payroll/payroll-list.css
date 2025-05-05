@@ -1,0 +1,12 @@
+.payroll-list ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .payroll-list li {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  

@@ -1,0 +1,11 @@
+/* Example CSS for Payroll page */
+.payroll-container {
+    background-color: #f0f0f0;
+    padding: 20px;
+  }
+  
+  .payroll-header {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  

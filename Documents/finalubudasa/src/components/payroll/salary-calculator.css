@@ -1,0 +1,13 @@
+.salary-calculator input {
+    padding: 10px;
+    margin-right: 10px;
+  }
+  
+  .salary-calculator button {
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
