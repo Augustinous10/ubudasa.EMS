@@ -1,12 +1,117 @@
-.payroll-list ul {
-    list-style: none;
-    padding: 0;
+/* Container for the payroll list */
+.payroll-list-container {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px;
+  max-width: 100%;
+}
+
+/* Title for the payroll list */
+.payroll-list-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Styling for the message when no records are found */
+.no-records-message {
+  font-size: 18px;
+  color: #888;
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* Styling for the unordered list */
+.payroll-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each payroll item styling */
+.payroll-item {
+  padding: 15px;
+  border-bottom: 1px solid #f1f1f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for each payroll item */
+.payroll-item:hover {
+  background-color: #f1f1f1;
+}
+
+/* Styling for payroll details */
+.payroll-details p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+/* Paid status styling */
+.payroll-details p strong {
+  font-weight: 600;
+}
+
+/* Paid record styling */
+.paid {
+  color: #4CAF50;
+}
+
+/* Pending record styling */
+.pending {
+  color: #f44336;
+}
+
+/* Mark as Paid button styling */
+.mark-paid-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  min-width: 120px;
+  align-self: flex-start;
+}
+
+/* Hover effect for the "Mark as Paid" button */
+.mark-paid-btn:hover {
+  background-color: #388e3c;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .payroll-list-container {
+    padding: 15px;
   }
-  
-  .payroll-list li {
-    background: #fff;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  .payroll-list-title {
+    font-size: 20px;
   }
-  
+
+  .payroll-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 0;
+  }
+
+  .payroll-details p {
+    font-size: 14px;
+  }
+
+  .mark-paid-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+    min-width: 100px;
+  }
+}

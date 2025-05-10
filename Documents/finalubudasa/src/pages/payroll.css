@@ -1,11 +1,65 @@
-/* Example CSS for Payroll page */
+/* src/components/payroll/payroll.css */
 .payroll-container {
-    background-color: #f0f0f0;
-    padding: 20px;
-  }
-  
-  .payroll-header {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+  text-align: center;
+  color: #333;
+}
+
+.date-range {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.date-range label {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.date-range input {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.payroll-table table, .payment-history table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.payroll-table th, .payment-history th {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+}
+
+.payroll-table td, .payment-history td {
+  padding: 10px;
+  text-align: center;
+}
+
+.total-pay {
+  text-align: right;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.payment-history tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.payment-history td {
+  font-size: 14px;
+  color: #333;
+}

@@ -1,18 +1,15 @@
 import { Link } from 'react-router-dom';
-import { useEmployees } from '../../context/EmployeeContext';
-import './employee-list.css';
+import './employee-list.css'; // Make sure to import the CSS file
 
-const EmployeeList = () => {
-  const { employees } = useEmployees();
-
+const EmployeeList = ({ employees }) => {
   return (
-    <div className="employee-list">
-      <h3>All Employees</h3>
-      <ul>
+    <div className="employee-list-container">
+      <h2 className="employee-list-title">Employee Directory</h2>
+      <ul className="employee-list">
         {employees.map(emp => (
-          <li key={emp.id}>
-            <Link to={`/employees/${emp.id}`}>
-              <strong>{emp.name}</strong> – {emp.position} – {emp.email}
+          <li key={emp.id} className="employee-item">
+            <Link to={`/employees/${emp.id}`} className="employee-link">
+              {emp.firstName} {emp.lastName}
             </Link>
           </li>
         ))}

@@ -1,0 +1,34 @@
+.attendance-calendar-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-calendar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.react-calendar__tile--active {
+  background-color: #4CAF50 !important;
+  color: white;
+}
+
+.react-calendar__tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attendance-mark {
+  background-color: #4CAF50;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}

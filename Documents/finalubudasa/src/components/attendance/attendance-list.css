@@ -1,12 +1,77 @@
-.attendance-list ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .attendance-list li {
-    background: #fff;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  
+.attendance-list {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-list h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.attendance-search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.attendance-record {
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.attendance-date {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.attendance-status {
+  font-size: 1.2rem;
+  color: #4CAF50;
+}
+
+.attendance-employees {
+  margin: 10px 0;
+}
+
+.employee-name {
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+.attendance-notes {
+  font-size: 1rem;
+  color: #555;
+  margin: 10px 0;
+}
+
+.attendance-images {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.attendance-image {
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.attendance-image img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}

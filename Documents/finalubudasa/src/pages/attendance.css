@@ -1,29 +1,71 @@
-.attendance-list-container {
-    padding: 20px;
-  }
-  
-  .attendance-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .attendance-table th,
-  .attendance-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  
-  .upload-btn {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .upload-btn:hover {
-    background-color: #45a049;
-  }
-  
+/* src/components/attendance/attendance.css */
+.attendance-report-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.date-filter {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.date-filter label {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.date-filter input {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.attendance-list {
+  margin-top: 20px;
+}
+
+.attendance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.attendance-info span {
+  font-size: 16px;
+  color: #333;
+}
+
+.attendance-image img {
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-left: 10px;
+}
+
+.attendance-item p {
+  color: #888;
+  font-size: 14px;
+  font-style: italic;
+}

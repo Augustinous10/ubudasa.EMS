@@ -1,88 +1,62 @@
-import { useState } from 'react';
-import '../styles/components/attendance/image-uploader.css';
+// src/components/attendance/ImageUploader.jsx
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { UploadCloud } from 'lucide-react';
+import './image-uploader.css';
 
-const ImageUploader = ({ date, onUpload }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+function ImageUploader({ onImageUpload, recordId }) {
+  const [previewFiles, setPreviewFiles] = useState([]);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
 
-    if (!file) {
-      return;
-    }
+    if (files.length > 0) {
+      setPreviewFiles(files.map(file => URL.createObjectURL(file)));
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please select an image file (JPEG, PNG, etc.)');
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('File size too large. Please select an image under 5MB.');
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      return;
-    }
-
-    setSelectedFile(file);
-    setError(null);
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPreviewUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!selectedFile) {
-      setError('Please select an image file.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await onUpload(selectedFile);
-      setSelectedFile(null);
-      setPreviewUrl(null);
-      setError(null);
-    } catch (err) {
-      console.error(err);
-      setError('Upload failed. Please try again.');
-    } finally {
-      setLoading(false);
+      // Only trigger upload for valid image files
+      const imageFiles = files.filter(file => file.type.startsWith("image/"));
+      if (imageFiles.length) {
+        onImageUpload(imageFiles, recordId);
+      }
     }
   };
 
   return (
-    <form className="image-uploader" onSubmit={handleSubmit}>
-      <label>
-        Upload attendance image for {date}:
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+    <div className="image-uploader-box">
+      <label htmlFor={`upload-${recordId}`} className="upload-label">
+        <UploadCloud size={20} />
+        <span>Upload Images</span>
+        <input
+          id={`upload-${recordId}`}
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+          hidden
+        />
       </label>
 
-      {previewUrl && (
-        <div className="preview">
-          <img src={previewUrl} alt="Preview" />
+      {previewFiles.length > 0 && (
+        <div className="preview-grid mt-2">
+          {previewFiles.map((src, index) => (
+            <img
+              key={index}
+              src={src}
+              alt={`Preview ${index}`}
+              className="preview-thumbnail"
+              loading="lazy"
+            />
+          ))}
         </div>
       )}
-
-      {error && <div className="error">{error}</div>}
-
-      <button type="submit" disabled={loading}>
-        {loading ? 'Uploading...' : 'Upload'}
-      </button>
-    </form>
+    </div>
   );
-};
+}
 
-export default ImageUploader;
+// Optional: Prevent unnecessary re-renders
+export default React.memo(ImageUploader);
+
+ImageUploader.propTypes = {
+  onImageUpload: PropTypes.func.isRequired,
+  recordId: PropTypes.string, // Optional if used globally
+};

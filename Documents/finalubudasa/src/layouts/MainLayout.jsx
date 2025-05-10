@@ -1,11 +1,11 @@
 import Header from '../components/common/Header';
 import Sidebar from '../components/common/Sidebar';
 import Footer from '../components/common/Footer';
+import { Outlet } from 'react-router-dom';
 
 import './main-layout.css';
 
-
-const MainLayout = ({ children }) => {
+const MainLayout = () => {
   return (
     <div className="main-layout">
       <Header />
@@ -13,7 +13,9 @@ const MainLayout = ({ children }) => {
         <div className="sidebar">
           <Sidebar />
         </div>
-        <main className="main-content">{children}</main>
+        <main className="main-content">
+          <Outlet /> {/* <-- This is where routed pages will appear */}
+        </main>
       </div>
       <Footer />
     </div>

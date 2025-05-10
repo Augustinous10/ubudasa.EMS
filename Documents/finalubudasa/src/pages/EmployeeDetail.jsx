@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom';
 import { useEmployees } from '../context/EmployeeContext';
-import MainLayout from '../layouts/MainLayout';
 import EmployeeProfile from '../components/employees/EmployeeProfile';
 
 const EmployeeDetail = () => {
@@ -9,11 +8,11 @@ const EmployeeDetail = () => {
 
   const employee = employees.find(emp => emp.id.toString() === id);
 
-  return (
-    <MainLayout>
-      <EmployeeProfile employee={employee} />
-    </MainLayout>
-  );
+  if (!employee) {
+    return <p>Employee not found.</p>;  // Optional: handle invalid ID
+  }
+
+  return <EmployeeProfile employee={employee} />;
 };
 
 export default EmployeeDetail;

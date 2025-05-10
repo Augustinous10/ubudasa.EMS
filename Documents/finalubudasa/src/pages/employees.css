@@ -1,0 +1,145 @@
+/* employees.css */
+
+/* General Layout */
+.employee-management {
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+  text-align: center;
+  color: #333;
+}
+
+/* Add Employee Form */
+.add-employee-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.add-employee-form input {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 200px;
+}
+
+.add-employee-form button {
+  padding: 10px 15px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.add-employee-form button:hover {
+  background-color: #45a049;
+}
+
+/* Employee List */
+.employee-list {
+  margin-bottom: 30px;
+}
+
+.employee-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.employee-item span {
+  font-size: 14px;
+  color: #555;
+}
+
+.employee-item button {
+  padding: 5px 10px;
+  font-size: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.employee-item button:hover {
+  background-color: #45a049;
+}
+
+/* Group Image Upload */
+.group-image-upload {
+  margin-bottom: 30px;
+}
+
+.group-image-upload input {
+  display: block;
+  margin-top: 10px;
+}
+
+.group-image-upload label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Attendance Report */
+.attendance-report {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.attendance-report button {
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #008CBA;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.attendance-report button:hover {
+  background-color: #007B9A;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .add-employee-form {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .add-employee-form input {
+    width: 80%;
+    margin-bottom: 10px;
+  }
+
+  .employee-item {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .employee-item button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .attendance-report button {
+    width: 100%;
+    padding: 15px;
+  }
+}

@@ -1,23 +1,71 @@
+/* Basic sidebar styles */
 .sidebar {
-    width: 220px;
-    background-color: var(--secondary-color);
-    height: calc(100vh - var(--header-height));
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  }
-  
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar ul li {
-    margin: 15px 0;
-  }
-  
-  .sidebar ul li a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 500;
-  }
-  
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #34495e); /* Gradient background for modern look */
+  color: white;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow to the sidebar */
+  border-radius: 10px 0 0 10px; /* Rounded corners for a softer appearance */
+}
+
+nav ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+nav ul li {
+  margin: 20px 0;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px; /* Slightly more padding for better clickability */
+  border-radius: 8px; /* Rounded corners for each link */
+  transition: all 0.3s ease; /* Smooth transition effect */
+}
+
+nav ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
+  padding-left: 15px; /* Slightly more padding when hovered */
+  transform: translateX(5px); /* Slight push to the right for modern hover effect */
+}
+
+nav ul li a svg {
+  margin-right: 15px; /* More space between icon and text */
+  font-size: 20px; /* Slightly larger icons for better visibility */
+}
+
+/* Style for settings button at the bottom */
+.settings {
+  margin-top: auto; /* Pushes the settings button to the bottom */
+  padding: 20px;
+  background: linear-gradient(135deg, #34495e, #2c3e50); /* Gradient for the settings section */
+  text-align: center;
+  border-radius: 0 0 10px 10px; /* Rounded corners for the bottom */
+}
+
+.settings a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 20px; /* Padding for better user interaction */
+  border-radius: 8px; /* Matching rounded corners */
+  transition: all 0.3s ease; /* Smooth transition */
+}
+
+.settings a:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
+  transform: translateX(5px); /* Slight push effect */
+}

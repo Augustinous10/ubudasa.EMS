@@ -1,12 +1,59 @@
-.employee-list ul {
-    list-style: none;
-    padding: 0;
+/* EmployeeList.css */
+
+/* Container for the employee list */
+.employee-list-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px;
+}
+
+/* Title for the employee list */
+.employee-list-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Styling for the unordered list */
+.employee-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each employee item styling */
+.employee-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+/* Styling for the link */
+.employee-link {
+  font-size: 18px;
+  color: #4CAF50;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+/* Hover effect for the link */
+.employee-link:hover {
+  color: #388e3c;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .employee-list-container {
+    padding: 15px;
   }
-  
-  .employee-list li {
-    padding: 10px;
-    background: #fff;
-    margin-bottom: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  .employee-list-title {
+    font-size: 20px;
   }
-  
+
+  .employee-link {
+    font-size: 16px;
+  }
+}
