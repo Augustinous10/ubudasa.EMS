@@ -1,76 +1,103 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './attendance.css';
+import { useEmployee } from '../context/EmployeeContext';
 
-const Attendance = ({ employees, attendanceRecords }) => {
-  const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]); // Default to today
+const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
+  const { employees = [] } = useEmployee();
+  const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedManagerId, setSelectedManagerId] = useState('');
   const [filteredAttendance, setFilteredAttendance] = useState([]);
 
-  // Filter attendance based on selected date
-  const filterAttendanceByDate = useCallback(() => {
-    if (Array.isArray(attendanceRecords)) {
-      const filtered = attendanceRecords.filter(
-        (record) => record.date === attendanceDate
-      );
-      setFilteredAttendance(filtered);
-    } else {
-      setFilteredAttendance([]); // Fallback to empty array if attendanceRecords is not an array
+  const filterAttendanceByDateAndManager = useCallback(() => {
+    if (!Array.isArray(attendanceRecords)) {
+      setFilteredAttendance([]);
+      return;
     }
-  }, [attendanceRecords, attendanceDate]);  // Add attendanceRecords and attendanceDate as dependencies
 
-  // Run the filter when attendanceRecords or attendanceDate changes
+    const filtered = attendanceRecords.filter((record) => {
+      const matchesDate = record.date === attendanceDate;
+      const matchesManager = selectedManagerId ? record.siteManagerId === selectedManagerId : true;
+      return matchesDate && matchesManager;
+    });
+
+    setFilteredAttendance(filtered);
+  }, [attendanceRecords, attendanceDate, selectedManagerId]);
+
   useEffect(() => {
-    filterAttendanceByDate();
-  }, [filterAttendanceByDate]);  // Use filterAttendanceByDate as the only dependency
-
-  const handleDateChange = (e) => {
-    setAttendanceDate(e.target.value);
-  };
+    filterAttendanceByDateAndManager();
+  }, [filterAttendanceByDateAndManager]);
 
   return (
-    <div className="attendance-report-container">
-      <h2>Attendance Report</h2>
+    <section className="attendance-report-container">
+      <header className="attendance-header">
+        <h2>Attendance Report</h2>
 
-      {/* Date filter */}
-      <div className="date-filter">
-        <label htmlFor="attendance-date">Select Date: </label>
-        <input
-          type="date"
-          id="attendance-date"
-          value={attendanceDate}
-          onChange={handleDateChange}
-        />
-      </div>
+        <div className="filters">
+          <div className="date-filter">
+            <label htmlFor="attendance-date">Select Date:</label>
+            <input
+              type="date"
+              id="attendance-date"
+              value={attendanceDate}
+              onChange={(e) => setAttendanceDate(e.target.value)}
+            />
+          </div>
 
-      {/* Attendance List */}
+          <div className="manager-filter">
+            <label htmlFor="site-manager">Site Manager:</label>
+            <select
+              id="site-manager"
+              value={selectedManagerId}
+              onChange={(e) => setSelectedManagerId(e.target.value)}
+            >
+              <option value="">All</option>
+              {siteManagers.map((manager) => (
+                <option key={manager.id} value={manager.id}>
+                  {manager.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </header>
+
       <div className="attendance-list">
         <h3>Attendance for {attendanceDate}</h3>
+
         {filteredAttendance.length === 0 ? (
-          <p>No attendance records for this date.</p>
+          <p className="no-records">No attendance records for this date and manager.</p>
         ) : (
-          filteredAttendance.map((record) => {
-            const employee = employees.find((emp) => emp.id === record.id);
-            return (
-              <div key={record.id} className="attendance-item">
-                <div className="attendance-info">
-                  <span>{employee ? employee.name : 'Unknown Employee'}</span>
-                  <span>Status: {record.status}</span>
-                </div>
-                {record.status === 'present' && record.image && (
-                  <div className="attendance-image">
-                    <img
-                      src={record.image}
-                      alt={`${employee ? employee.name : 'Employee'}'s attendance`}
-                      width="100"
-                      height="100"
-                    />
+          <div className="attendance-grid">
+            {filteredAttendance.map((record) => {
+              const employee = employees.find(emp => emp.id === record.id);
+              const manager = siteManagers.find(m => m.id === record.siteManagerId);
+
+              return (
+                <div key={record.id + record.siteManagerId} className="attendance-card">
+                  <div className="attendance-info">
+                    <h4>{employee?.name || 'Unknown Employee'}</h4>
+                    <p className={`status-label ${record.status}`}>
+                      Status: {record.status}
+                    </p>
+                    <p className="submitted-by">
+                      Submitted by: {manager?.name || 'Unknown Manager'}
+                    </p>
                   </div>
-                )}
-              </div>
-            );
-          })
+                  {record.status === 'present' && record.image && (
+                    <div className="attendance-photo">
+                      <img
+                        src={record.image}
+                        alt={`Attendance proof for ${employee?.name}`}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

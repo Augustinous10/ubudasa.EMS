@@ -1,145 +1,227 @@
 /* employees.css */
 
-/* General Layout */
+/* General Styles */
 .employee-management {
-  font-family: 'Arial', sans-serif;
-  padding: 20px;
-  max-width: 900px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1100px;
   margin: 0 auto;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  color: #2c3e50;
+  background-color: #fdfdfd;
 }
 
-h2, h3 {
-  text-align: center;
-  color: #333;
+/* Headings */
+.employee-management h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+.employee-management h3 {
+  font-size: 22px;
+  margin-top: 30px;
+  color: #2980b9;
+}
+
+.employee-management h4 {
+  font-size: 18px;
+  margin: 20px 0 10px;
+  color: #16a085;
+}
+
+.employee-management h5 {
+  font-size: 16px;
+  margin: 10px 0 5px;
+  color: #27ae60;
 }
 
 /* Add Employee Form */
 .add-employee-form {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-.add-employee-form input {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ddd;
+.add-employee-form input,
+.add-employee-form select {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  width: 200px;
+  font-size: 16px;
 }
 
 .add-employee-form button {
-  padding: 10px 15px;
-  font-size: 14px;
-  background-color: #4CAF50;
+  background-color: #3498db;
   color: white;
   border: none;
+  padding: 10px 20px;
   border-radius: 4px;
+  font-weight: bold;
   cursor: pointer;
-  margin-left: 10px;
+  transition: background-color 0.3s;
 }
 
 .add-employee-form button:hover {
-  background-color: #45a049;
+  background-color: #2980b9;
 }
 
-/* Employee List */
-.employee-list {
-  margin-bottom: 30px;
+/* Employee Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.employee-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 10px;
+table th {
+  background-color: #ecf6fc;
+  color: #2c3e50;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid #3498db;
 }
 
-.employee-item span {
-  font-size: 14px;
-  color: #555;
+table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table tr:hover {
+  background-color: #eef7fd;
+}
+
+/* Employee Buttons */
 .employee-item button {
-  padding: 5px 10px;
-  font-size: 12px;
-  background-color: #4CAF50;
+  background-color: #2ecc71;
   color: white;
   border: none;
+  padding: 6px 12px;
   border-radius: 4px;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .employee-item button:hover {
-  background-color: #45a049;
+  background-color: #27ae60;
 }
 
-/* Group Image Upload */
+/* Status Tags */
+.status-present {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.status-absent {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* Image Upload Section */
 .group-image-upload {
-  margin-bottom: 30px;
-}
-
-.group-image-upload input {
-  display: block;
-  margin-top: 10px;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f2f9fd;
+  border-left: 4px solid #3498db;
+  border-radius: 6px;
 }
 
 .group-image-upload label {
-  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
   font-weight: bold;
-  color: #333;
 }
 
-/* Attendance Report */
-.attendance-report {
-  margin-top: 20px;
+.group-image-upload input[type="file"] {
+  margin-bottom: 12px;
+}
+
+/* Preview Image */
+.preview-image {
   text-align: center;
+  margin-top: 10px;
+}
+
+.preview-image img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Attendance Report Styles */
+.attendance-report {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f4fafd;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .attendance-report button {
-  padding: 10px 20px;
-  font-size: 14px;
-  background-color: #008CBA;
+  background-color: #3498db;
   color: white;
   border: none;
+  padding: 8px 16px;
   border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .attendance-report button:hover {
-  background-color: #007B9A;
+  background-color: #2980b9;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
+/* Finalized Attendance Section */
+.finalized-attendance {
+  margin-top: 40px;
+}
+
+.attendance-date-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-left: 4px solid #3498db;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+/* Group Photo */
+.group-photo-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.group-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .add-employee-form {
     flex-direction: column;
-    align-items: center;
   }
 
-  .add-employee-form input {
-    width: 80%;
-    margin-bottom: 10px;
+  table th,
+  table td {
+    font-size: 14px;
+    padding: 8px 10px;
   }
 
-  .employee-item {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .employee-item button {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .attendance-report button {
-    width: 100%;
-    padding: 15px;
+  .group-image,
+  .preview-image img {
+    max-width: 100%;
+    height: auto;
   }
 }

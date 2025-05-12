@@ -1,12 +1,12 @@
 import Card from '../components/common/Card';
-import { useEmployees } from '../context/EmployeeContext';
+import { useEmployee } from '../context/EmployeeContext'; // ✅ Fixed import
 import { useAttendance } from '../context/AttendanceContext';
 import { usePayroll } from '../context/PayrollContext';
 
 import '../pages/dashboard.css';
 
 const Dashboard = () => {
-  const { employees = [] } = useEmployees() || {};
+  const { employees = [] } = useEmployee(); // ✅ Fixed usage
   const { records = [] } = useAttendance() || {};
   const { payrolls = [] } = usePayroll() || {};
 

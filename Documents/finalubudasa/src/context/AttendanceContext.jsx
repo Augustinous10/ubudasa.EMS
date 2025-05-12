@@ -1,58 +1,53 @@
 // AttendanceContext.js
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 
-export const AttendanceContext = createContext();
+// Create the context
+const AttendanceContext = createContext();
+
+// Custom hook for using the attendance context
+export const useAttendance = () => useContext(AttendanceContext);
 
 export const AttendanceProvider = ({ children }) => {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
+  // Function to mark attendance - this is what was missing
+  const markAttendance = (attendanceData) => {
+    console.log('Attendance marked:', attendanceData);
+    
+    // Add the new attendance data to our records
+    setAttendanceRecords(prevRecords => [...prevRecords, ...attendanceData]);
+    
+    // You can also save this to localStorage or send to an API here
+    // Example API call:
+    // fetch('/api/attendance', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(attendanceData)
+    // });
+  };
 
-  useEffect(() => {
-    fetchAttendance();
-  }, []);
+  // Other attendance-related functions you might need
+  const getAllAttendance = () => {
+    return attendanceRecords;
+  };
 
-  const fetchAttendance = async () => {
-    try {
-      setLoading(true);
+  const getAttendanceByDate = (date) => {
+    return attendanceRecords.filter(record => record.date === date);
+  };
 
-      // Mock data
-      const mockData = [
-        {
-          id: 1,
-          date: '2025-05-01',
-          employeesPresent: [1, 2],
-          notes: 'All employees arrived on time.',
-          images: ['image1.jpg', 'image2.jpg']
-        },
-        {
-          id: 2,
-          date: '2025-05-02',
-          employeesPresent: [2, 3],
-          notes: 'One employee was late.',
-          images: []
-        }
-      ];
-
-      setAttendanceRecords(mockData);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch attendance');
-      setLoading(false);
-    }
+  // Values and functions to provide through the context
+  const value = {
+    attendanceRecords,
+    markAttendance,      // <-- This is the function that will replace onMarkAttendance
+    getAllAttendance,
+    getAttendanceByDate
   };
 
   return (
-    <AttendanceContext.Provider value={{ attendanceRecords, loading, error }}>
+    <AttendanceContext.Provider value={value}>
       {children}
     </AttendanceContext.Provider>
   );
 };
 
-export const useAttendance = () => {
-  const context = useContext(AttendanceContext);
-  if (!context) {
-    throw new Error('useAttendance must be used within an AttendanceProvider');
-  }
-  return context;
-};
+export default AttendanceContext;

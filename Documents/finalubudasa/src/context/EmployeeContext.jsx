@@ -1,156 +1,67 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-//import employeeService from '../services/employeeService';
+// EmployeeContext.js (If you need it)
+// This is a sample implementation if you don't already have one
 
-export const EmployeeContext = createContext();
+import React, { createContext, useState, useContext } from 'react';
+
+// Create the context
+const EmployeeContext = createContext();
+
+// Custom hook for using the employee context
+export const useEmployee = () => useContext(EmployeeContext);
 
 export const EmployeeProvider = ({ children }) => {
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
-  const fetchEmployees = async () => {
-    try {
-      setLoading(true);
-      // const response = await employeeService.getAllEmployees();
-
-      // Mock data for development
-      const mockEmployees = [
-        {
-          id: 1,
-          firstName: 'John',
-          lastName: 'Doe',
-          position: 'Senior Painter',
-          phoneNumber: '+250 789123456',
-          email: 'john.doe@example.com',
-          hireDate: '2022-01-15',
-          salary: 85000,
-          department: 'Interior Design',
-          profileImage: null
-        },
-        {
-          id: 2,
-          firstName: 'Jane',
-          lastName: 'Smith',
-          position: '3D Design Specialist',
-          phoneNumber: '+250 789789456',
-          email: 'jane.smith@example.com',
-          hireDate: '2022-03-10',
-          salary: 92000,
-          department: '3D Wall Design',
-          profileImage: null
-        },
-        {
-          id: 3,
-          firstName: 'David',
-          lastName: 'Mugabo',
-          position: 'Kitchen Designer',
-          phoneNumber: '+250 789123789',
-          email: 'david.mugabo@example.com',
-          hireDate: '2022-05-20',
-          salary: 78000,
-          department: 'Kitchen & Bath',
-          profileImage: null
-        }
-      ];
-
-      setEmployees(mockEmployees);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch employees');
-      setLoading(false);
-      console.error('Error fetching employees:', err);
-    }
+  
+  // Add a new employee
+  const addEmployee = (employee) => {
+    const newEmployee = {
+      id: employee.id || Date.now().toString(),
+      name: employee.name,
+      status: employee.status || 'inactive',
+      // Add any other employee properties here
+    };
+    
+    setEmployees(prev => [...prev, newEmployee]);
+    return newEmployee;
   };
-
-  const addEmployee = async (employeeData) => {
-    try {
-      setLoading(true);
-      // const newEmployee = await employeeService.createEmployee(employeeData);
-
-      const newEmployee = {
-        id: employees.length + 1,
-        ...employeeData
-      };
-
-      setEmployees([...employees, newEmployee]);
-      setLoading(false);
-      return newEmployee;
-    } catch (err) {
-      setError('Failed to add employee');
-      setLoading(false);
-      console.error('Error adding employee:', err);
-      throw err;
-    }
+  
+  // Update an employee
+  const updateEmployee = (id, updates) => {
+    setEmployees(prev => 
+      prev.map(emp => emp.id === id ? { ...emp, ...updates } : emp)
+    );
   };
-
-  const updateEmployee = async (id, employeeData) => {
-    try {
-      setLoading(true);
-      // const updatedEmployee = await employeeService.updateEmployee(id, employeeData);
-
-      const updatedEmployees = employees.map(emp =>
-        emp.id === id ? { ...emp, ...employeeData } : emp
-      );
-
-      setEmployees(updatedEmployees);
-      setLoading(false);
-      return updatedEmployees.find(emp => emp.id === id);
-    } catch (err) {
-      setError('Failed to update employee');
-      setLoading(false);
-      console.error('Error updating employee:', err);
-      throw err;
-    }
+  
+  // Delete an employee
+  const deleteEmployee = (id) => {
+    setEmployees(prev => prev.filter(emp => emp.id !== id));
   };
-
-  const deleteEmployee = async (id) => {
-    try {
-      setLoading(true);
-      // await employeeService.deleteEmployee(id);
-
-      const filteredEmployees = employees.filter(emp => emp.id !== id);
-      setEmployees(filteredEmployees);
-      setLoading(false);
-      return true;
-    } catch (err) {
-      setError('Failed to delete employee');
-      setLoading(false);
-      console.error('Error deleting employee:', err);
-      throw err;
-    }
+  
+  // Get all employees
+  const getAllEmployees = () => {
+    return employees;
   };
-
+  
+  // Get employee by ID
   const getEmployeeById = (id) => {
-    return employees.find(emp => emp.id === Number(id)) || null;
+    return employees.find(emp => emp.id === id);
   };
-
+  
+  // Value to provide through the context
+  const value = {
+    employees,
+    addEmployee,
+    updateEmployee,
+    deleteEmployee,
+    getAllEmployees,
+    getEmployeeById
+  };
+  
   return (
-    <EmployeeContext.Provider
-      value={{
-        employees,
-        loading,
-        error,
-        fetchEmployees,
-        addEmployee,
-        updateEmployee,
-        deleteEmployee,
-        getEmployeeById
-      }}
-    >
+    <EmployeeContext.Provider value={value}>
       {children}
     </EmployeeContext.Provider>
   );
 };
 
-// ✅ Add and export this custom hook:
-export const useEmployees = () => {
-  const context = useContext(EmployeeContext);
-  if (!context) {
-    throw new Error('useEmployees must be used within an EmployeeProvider');
-  }
-  return context;
-};
+export default EmployeeContext;

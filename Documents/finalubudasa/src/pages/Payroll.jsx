@@ -1,38 +1,60 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { usePayroll } from '../context/PayrollContext';
+import { useAttendance } from '../context/AttendanceContext';
 import './payroll.css';
 
-const Payroll = ({ employees, paymentHistory }) => {
+const Payroll = () => {
+  const { payrolls: paymentHistory = [] } = usePayroll() || {};
+  const { attendanceRecords = [] } = useAttendance() || {};
+
   const [payrollData, setPayrollData] = useState([]);
   const [totalAmountToPay, setTotalAmountToPay] = useState(0);
   const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: new Date().toISOString().split('T')[0], // Default to today
+    startDate: new Date().toISOString().split('T')[0],
     endDate: new Date().toISOString().split('T')[0],
   });
 
-  const dailyRate = 10000; // Set your company’s daily rate for employees
+  const dailyRate = 10000;
 
-  // Use useCallback to memoize the function
   const generatePayroll = useCallback(() => {
-    const payroll = employees.map((employee) => {
-      const { daysWorked, extraDaysWorked } = employee;
-      const regularPay = daysWorked * dailyRate;
-      const extraPay = extraDaysWorked * dailyRate;
-      const totalPay = regularPay + extraPay;
+    const startDate = new Date(selectedDateRange.startDate);
+    const endDate = new Date(selectedDateRange.endDate);
 
+    const filteredAttendance = attendanceRecords.filter((record) => {
+      const date = new Date(record.date);
+      return date >= startDate && date <= endDate;
+    });
+
+    const attendanceMap = {};
+
+    filteredAttendance.forEach((record) => {
+      if (!attendanceMap[record.employeeId]) {
+        attendanceMap[record.employeeId] = {
+          employeeName: record.employeeName,
+          daysWorked: 0,
+        };
+      }
+      attendanceMap[record.employeeId].daysWorked += 1;
+    });
+
+    const payroll = Object.entries(attendanceMap).map(([employeeId, data]) => {
+      const regularPay = data.daysWorked * dailyRate;
       return {
-        ...employee,
+        id: employeeId,
+        name: data.employeeName,
+        daysWorked: data.daysWorked,
+        extraDaysWorked: 0,
         regularPay,
-        extraPay,
-        totalPay,
+        extraPay: 0,
+        totalPay: regularPay,
       };
     });
 
     setPayrollData(payroll);
     const total = payroll.reduce((sum, record) => sum + record.totalPay, 0);
     setTotalAmountToPay(total);
-  }, [employees, dailyRate]); // Include employees and dailyRate as dependencies
+  }, [attendanceRecords, selectedDateRange]);
 
-  // Handle report filter
   const handleDateRangeChange = (e) => {
     setSelectedDateRange({
       ...selectedDateRange,
@@ -40,24 +62,21 @@ const Payroll = ({ employees, paymentHistory }) => {
     });
   };
 
-  // Filter payments by date range
   const filteredPayments = paymentHistory.filter((payment) => {
     const paymentDate = new Date(payment.date);
     const startDate = new Date(selectedDateRange.startDate);
     const endDate = new Date(selectedDateRange.endDate);
-
     return paymentDate >= startDate && paymentDate <= endDate;
   });
 
   useEffect(() => {
-    generatePayroll(); // Update payroll data whenever employee data changes
-  }, [employees, generatePayroll]); // Now generatePayroll is memoized and included in the dependencies
+    generatePayroll();
+  }, [generatePayroll]);
 
   return (
     <div className="payroll-container">
       <h2>Employee Payroll</h2>
 
-      {/* Date Range Selector for Report */}
       <div className="date-range">
         <label htmlFor="start-date">Start Date: </label>
         <input
@@ -75,7 +94,6 @@ const Payroll = ({ employees, paymentHistory }) => {
         />
       </div>
 
-      {/* Payroll Table */}
       <div className="payroll-table">
         <h3>Payroll Details</h3>
         <table>
@@ -110,11 +128,10 @@ const Payroll = ({ employees, paymentHistory }) => {
         </table>
 
         <div className="total-pay">
-          <p>Total Amount to Pay: {totalAmountToPay}</p>
+          <p>Total Amount to Pay: {totalAmountToPay} RWF</p>
         </div>
       </div>
 
-      {/* Payment History Report */}
       <div className="payment-history">
         <h3>Payment History</h3>
         <table>
