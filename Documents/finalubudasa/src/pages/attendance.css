@@ -115,3 +115,22 @@
     gap: 15px;
   }
 }
+
+.daily-reports {
+  margin-top: 40px;
+}
+
+.report-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.report-card {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 16px;
+  flex: 1 1 300px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}

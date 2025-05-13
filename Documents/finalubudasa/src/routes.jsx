@@ -10,15 +10,16 @@ import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Attendance from './pages/Attendance';
 import Payroll from './pages/Payroll';
-import Login from './pages/Login'; // <-- Don't forget this
+import DailyReport from './pages/DailyReport';
+import SiteManagers from './pages/SiteManagers'; // ✅ New
+import Login from './pages/Login';
 
-// Protected Route to guard access
+// Protected Route
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-// AppRoutes Component, which now expects onMarkAttendance as a prop
 const AppRoutes = ({ onMarkAttendance }) => {
   return (
     <Routes>
@@ -26,12 +27,11 @@ const AppRoutes = ({ onMarkAttendance }) => {
 
       <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
         <Route path="/" element={<Dashboard />} />
-        <Route
-          path="/employees"
-          element={<Employees onMarkAttendance={onMarkAttendance} />}
-        />
+        <Route path="/employees" element={<Employees onMarkAttendance={onMarkAttendance} />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/payroll" element={<Payroll />} />
+        <Route path="/daily-report" element={<DailyReport />} />
+        <Route path="/site-managers" element={<SiteManagers />} /> {/* ✅ New route */}
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

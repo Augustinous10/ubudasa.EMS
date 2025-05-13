@@ -1,0 +1,38 @@
+.report-container {
+  max-width: 700px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.report-form label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.report-form input,
+.report-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.report-form button {
+  background-color: #3498db;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.report-form button:hover {
+  background-color: #2980b9;
+}

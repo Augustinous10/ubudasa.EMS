@@ -1,31 +1,44 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './attendance.css';
 import { useEmployee } from '../context/EmployeeContext';
+import { useDailyReport } from '../context/DailyReportContext'; // ⬅️ Import Daily Report context
 
 const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
   const { employees = [] } = useEmployee();
+
+  // ✅ Fix ESLint warning with useMemo
+  const dailyReportContext = useDailyReport();
+  const dailyReports = useMemo(() => dailyReportContext?.dailyReports || [], [dailyReportContext]);
+
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedManagerId, setSelectedManagerId] = useState('');
   const [filteredAttendance, setFilteredAttendance] = useState([]);
+  const [filteredReports, setFilteredReports] = useState([]);
 
-  const filterAttendanceByDateAndManager = useCallback(() => {
-    if (!Array.isArray(attendanceRecords)) {
-      setFilteredAttendance([]);
-      return;
-    }
+  const filterData = useCallback(() => {
+    const filteredAtt = Array.isArray(attendanceRecords)
+      ? attendanceRecords.filter(record => {
+          const matchesDate = record.date === attendanceDate;
+          const matchesManager = selectedManagerId ? record.siteManagerId === selectedManagerId : true;
+          return matchesDate && matchesManager;
+        })
+      : [];
 
-    const filtered = attendanceRecords.filter((record) => {
-      const matchesDate = record.date === attendanceDate;
-      const matchesManager = selectedManagerId ? record.siteManagerId === selectedManagerId : true;
-      return matchesDate && matchesManager;
-    });
+    const filteredRep = Array.isArray(dailyReports)
+      ? dailyReports.filter(report => {
+          const matchesDate = report.date === attendanceDate;
+          const matchesManager = selectedManagerId ? report.managerId === selectedManagerId : true;
+          return matchesDate && matchesManager;
+        })
+      : [];
 
-    setFilteredAttendance(filtered);
-  }, [attendanceRecords, attendanceDate, selectedManagerId]);
+    setFilteredAttendance(filteredAtt);
+    setFilteredReports(filteredRep);
+  }, [attendanceRecords, dailyReports, attendanceDate, selectedManagerId]);
 
   useEffect(() => {
-    filterAttendanceByDateAndManager();
-  }, [filterAttendanceByDateAndManager]);
+    filterData();
+  }, [filterData]);
 
   return (
     <section className="attendance-report-container">
@@ -61,6 +74,7 @@ const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
         </div>
       </header>
 
+      {/* Attendance Section */}
       <div className="attendance-list">
         <h3>Attendance for {attendanceDate}</h3>
 
@@ -91,6 +105,31 @@ const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
                       />
                     </div>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Daily Reports Section */}
+      <div className="daily-reports">
+        <h3>Daily Reports for {attendanceDate}</h3>
+
+        {filteredReports.length === 0 ? (
+          <p className="no-records">No daily reports for this date and manager.</p>
+        ) : (
+          <div className="report-grid">
+            {filteredReports.map((report, idx) => {
+              const manager = siteManagers.find(m => m.id === report.managerId);
+
+              return (
+                <div key={idx} className="report-card">
+                  <h4>{manager?.name || 'Unknown Manager'}</h4>
+                  <p><strong>Time:</strong> {report.time}</p>
+                  <p><strong>Activities:</strong> {report.activities}</p>
+                  <p><strong>Next Day Plan:</strong> {report.nextPlan}</p>
+                  <p><strong>Comments:</strong> {report.comments}</p>
                 </div>
               );
             })}
