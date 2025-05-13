@@ -1,71 +1,96 @@
-/* Basic sidebar styles */
 .sidebar {
-  width: 250px;
+  width: 260px;
+  background-color: #111827; /* Dark navy */
   height: 100vh;
-  background: linear-gradient(135deg, #2c3e50, #34495e); /* Gradient background for modern look */
-  color: white;
-  padding-top: 20px;
+  position: fixed;
+  top: 0;
+  left: -260px;
+  z-index: 1000;
+  transition: left 0.3s ease;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow to the sidebar */
-  border-radius: 10px 0 0 10px; /* Rounded corners for a softer appearance */
+  padding: 24px 16px;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  border-right: 1px solid #1f2937;
 }
 
-nav ul {
-  list-style-type: none;
-  padding-left: 0;
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #ffffffcc;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
+
+.sidebar-nav {
+  flex: 1;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-nav ul li {
-  margin: 20px 0;
-}
-
-nav ul li a {
-  color: white;
+.sidebar-nav li a {
+  color: #d1d5db;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  padding: 12px 20px; /* Slightly more padding for better clickability */
-  border-radius: 8px; /* Rounded corners for each link */
-  transition: all 0.3s ease; /* Smooth transition effect */
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-nav ul li a:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
-  padding-left: 15px; /* Slightly more padding when hovered */
-  transform: translateX(5px); /* Slight push to the right for modern hover effect */
+.sidebar-nav li a:hover {
+  background-color: #1f2937;
+  color: #ffffff;
 }
 
-nav ul li a svg {
-  margin-right: 15px; /* More space between icon and text */
-  font-size: 20px; /* Slightly larger icons for better visibility */
+.sidebar-nav a svg {
+  font-size: 18px;
+  flex-shrink: 0;
+  color: #9ca3af;
+  transition: color 0.2s;
 }
 
-/* Style for settings button at the bottom */
-.settings {
-  margin-top: auto; /* Pushes the settings button to the bottom */
-  padding: 20px;
-  background: linear-gradient(135deg, #34495e, #2c3e50); /* Gradient for the settings section */
-  text-align: center;
-  border-radius: 0 0 10px 10px; /* Rounded corners for the bottom */
+.sidebar-nav li a:hover svg {
+  color: #ffffff;
 }
 
-.settings a {
-  color: white;
-  text-decoration: none;
-  font-size: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px 20px; /* Padding for better user interaction */
-  border-radius: 8px; /* Matching rounded corners */
-  transition: all 0.3s ease; /* Smooth transition */
-}
+/* Responsive for wider screens */
+@media (min-width: 768px) {
+  .sidebar {
+    position: relative;
+    left: 0;
+    height: auto;
+    min-height: 100vh;
+  }
 
-.settings a:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
-  transform: translateX(5px); /* Slight push effect */
+  .close-btn {
+    display: none;
+  }
 }

@@ -78,86 +78,95 @@ const Payroll = () => {
       <h2>Employee Payroll</h2>
 
       <div className="date-range">
-        <label htmlFor="start-date">Start Date: </label>
-        <input
-          type="date"
-          name="startDate"
-          value={selectedDateRange.startDate}
-          onChange={handleDateRangeChange}
-        />
-        <label htmlFor="end-date">End Date: </label>
-        <input
-          type="date"
-          name="endDate"
-          value={selectedDateRange.endDate}
-          onChange={handleDateRangeChange}
-        />
-      </div>
-
-      <div className="payroll-table">
-        <h3>Payroll Details</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Employee Name</th>
-              <th>Days Worked</th>
-              <th>Extra Days Worked</th>
-              <th>Regular Pay</th>
-              <th>Extra Pay</th>
-              <th>Total Pay</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payrollData.length === 0 ? (
-              <tr>
-                <td colSpan="6">No payroll data available.</td>
-              </tr>
-            ) : (
-              payrollData.map((record) => (
-                <tr key={record.id}>
-                  <td>{record.name}</td>
-                  <td>{record.daysWorked}</td>
-                  <td>{record.extraDaysWorked}</td>
-                  <td>{record.regularPay}</td>
-                  <td>{record.extraPay}</td>
-                  <td>{record.totalPay}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        <div className="total-pay">
-          <p>Total Amount to Pay: {totalAmountToPay} RWF</p>
+        <div className="date-input">
+          <label htmlFor="startDate">Start Date</label>
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            value={selectedDateRange.startDate}
+            onChange={handleDateRangeChange}
+          />
+        </div>
+        <div className="date-input">
+          <label htmlFor="endDate">End Date</label>
+          <input
+            type="date"
+            id="endDate"
+            name="endDate"
+            value={selectedDateRange.endDate}
+            onChange={handleDateRangeChange}
+          />
         </div>
       </div>
 
-      <div className="payment-history">
-        <h3>Payment History</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Employee Name</th>
-              <th>Amount Paid</th>
-              <th>Payment Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredPayments.length === 0 ? (
+      <div className="table-wrapper">
+        <h3>Payroll Details</h3>
+        <div className="table-scroll">
+          <table className="responsive-table">
+            <thead>
               <tr>
-                <td colSpan="3">No payments made during this period.</td>
+                <th>Employee Name</th>
+                <th>Days Worked</th>
+                <th>Extra Days</th>
+                <th>Regular Pay</th>
+                <th>Extra Pay</th>
+                <th>Total Pay</th>
               </tr>
-            ) : (
-              filteredPayments.map((payment) => (
-                <tr key={payment.id}>
-                  <td>{payment.employeeName}</td>
-                  <td>{payment.amount}</td>
-                  <td>{payment.date}</td>
+            </thead>
+            <tbody>
+              {payrollData.length === 0 ? (
+                <tr>
+                  <td colSpan="6">No payroll data available.</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                payrollData.map((record) => (
+                  <tr key={record.id}>
+                    <td>{record.name}</td>
+                    <td>{record.daysWorked}</td>
+                    <td>{record.extraDaysWorked}</td>
+                    <td>{record.regularPay}</td>
+                    <td>{record.extraPay}</td>
+                    <td>{record.totalPay}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="total-pay">
+          <p>Total Amount to Pay: <strong>{totalAmountToPay} RWF</strong></p>
+        </div>
+      </div>
+
+      <div className="table-wrapper">
+        <h3>Payment History</h3>
+        <div className="table-scroll">
+          <table className="responsive-table">
+            <thead>
+              <tr>
+                <th>Employee Name</th>
+                <th>Amount Paid</th>
+                <th>Payment Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPayments.length === 0 ? (
+                <tr>
+                  <td colSpan="3">No payments made during this period.</td>
+                </tr>
+              ) : (
+                filteredPayments.map((payment) => (
+                  <tr key={payment.id}>
+                    <td>{payment.employeeName}</td>
+                    <td>{payment.amount}</td>
+                    <td>{payment.date}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

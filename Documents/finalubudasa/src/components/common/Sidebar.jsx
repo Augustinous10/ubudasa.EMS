@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaTachometerAlt,
@@ -6,52 +7,52 @@ import {
   FaMoneyBill,
   FaCog,
   FaRegFileAlt,
-  FaUserTie // ✅ Icon for Site Managers
+  FaTimes,
 } from 'react-icons/fa';
 import './sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, closeSidebar }) => {
   return (
-    <aside className="sidebar">
-      <nav>
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div className="sidebar-header">
+        <button className="close-btn" onClick={closeSidebar}>
+          <FaTimes />
+        </button>
+      </div>
+      <nav className="sidebar-nav">
         <ul>
           <li>
-            <Link to="/">
-              <FaTachometerAlt /> Dashboard
+            <Link to="/" onClick={closeSidebar}>
+              <FaTachometerAlt /> <span>Dashboard</span>
             </Link>
           </li>
           <li>
-            <Link to="/employees">
-              <FaUsers /> Employees
+            <Link to="/employees" onClick={closeSidebar}>
+              <FaUsers /> <span>Employees</span>
             </Link>
           </li>
           <li>
-            <Link to="/site-managers">
-              <FaUserTie /> Site Managers {/* ✅ New Link */}
+            <Link to="/attendance" onClick={closeSidebar}>
+              <FaClipboardList /> <span>Attendance</span>
             </Link>
           </li>
           <li>
-            <Link to="/attendance">
-              <FaClipboardList /> Attendance
+            <Link to="/payroll" onClick={closeSidebar}>
+              <FaMoneyBill /> <span>Payroll</span>
             </Link>
           </li>
           <li>
-            <Link to="/payroll">
-              <FaMoneyBill /> Payroll
+            <Link to="/daily-report" onClick={closeSidebar}>
+              <FaRegFileAlt /> <span>Daily Report</span>
             </Link>
           </li>
           <li>
-            <Link to="/daily-report">
-              <FaRegFileAlt /> Daily Report
+            <Link to="/settings" onClick={closeSidebar}>
+              <FaCog /> <span>Settings</span>
             </Link>
           </li>
         </ul>
       </nav>
-      <div className="settings">
-        <Link to="/settings">
-          <FaCog /> Settings
-        </Link>
-      </div>
     </aside>
   );
 };

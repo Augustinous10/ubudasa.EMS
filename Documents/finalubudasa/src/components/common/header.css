@@ -1,77 +1,113 @@
+/* header.css */
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1.5rem;
-  background-color: #1f2937; /* dark navy blue */
+  padding: 10px 20px;
+  background-color: #0d1321;
   color: white;
   position: relative;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.hamburger {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-right: 10px;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 0;
 }
 
 .profile-container {
   position: relative;
-  cursor: pointer;
 }
 
 .profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 2px solid #fff;
-  object-fit: cover;
-  transition: transform 0.2s ease;
-}
-
-.profile-pic:hover {
-  transform: scale(1.05);
+  cursor: pointer;
 }
 
 .dropdown {
   position: absolute;
   right: 0;
-  top: 55px;
-  background-color: #ffffff;
-  color: #333;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  top: 50px;
+  background: white;
+  color: black;
   list-style: none;
-  padding: 0.5rem 0;
-  width: 160px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .dropdown li {
-  padding: 10px 15px;
+  padding: 8px 10px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.95rem;
-  transition: background 0.2s ease;
 }
 
 .dropdown li:hover {
   background-color: #f0f0f0;
+}
+
+.dropdown li svg {
+  margin-right: 8px;
+}
+
+/* Mobile Drawer */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #0d1321;
+  color: white;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.close-drawer {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  align-self: flex-end;
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.drawer-nav {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
 
-  .logo {
-    margin-bottom: 0.5rem;
-  }
+.drawer-nav a {
+  color: white;
+  text-decoration: none;
+  padding: 12px 0;
+  font-size: 1.1rem;
+}
 
-  .dropdown {
-    top: 50px;
-    right: 10px;
-  }
+.drawer-nav a:hover {
+  background-color: #1c2230;
+  padding-left: 10px;
+  border-radius: 4px;
 }
