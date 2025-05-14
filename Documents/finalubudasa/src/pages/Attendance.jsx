@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './attendance.css';
 import { useEmployee } from '../context/EmployeeContext';
-import { useDailyReport } from '../context/DailyReportContext'; // ⬅️ Import Daily Report context
+import { useDailyReport } from '../context/DailyReportContext';
 
 const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
   const { employees = [] } = useEmployee();
-
-  // ✅ Fix ESLint warning with useMemo
   const dailyReportContext = useDailyReport();
   const dailyReports = useMemo(() => dailyReportContext?.dailyReports || [], [dailyReportContext]);
 
@@ -40,6 +38,11 @@ const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
     filterData();
   }, [filterData]);
 
+  const resetFilters = () => {
+    setAttendanceDate('');
+    setSelectedManagerId('');
+  };
+
   return (
     <section className="attendance-report-container">
       <header className="attendance-header">
@@ -71,53 +74,72 @@ const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
               ))}
             </select>
           </div>
+
+          <button className="reset-button" onClick={resetFilters}>Reset Filters</button>
         </div>
       </header>
 
       {/* Attendance Section */}
       <div className="attendance-list">
-        <h3>Attendance for {attendanceDate}</h3>
+        <h3>Attendance for {attendanceDate || 'All Dates'}</h3>
 
         {filteredAttendance.length === 0 ? (
-          <p className="no-records">No attendance records for this date and manager.</p>
+          <p className="no-records">
+            No attendance records found for {attendanceDate || 'any date'}
+            {selectedManagerId && ` under manager ${siteManagers.find(m => m.id === selectedManagerId)?.name || 'Unknown'}`}.
+          </p>
         ) : (
-          <div className="attendance-grid">
-            {filteredAttendance.map((record) => {
-              const employee = employees.find(emp => emp.id === record.id);
-              const manager = siteManagers.find(m => m.id === record.siteManagerId);
+          <>
+            <div className="summary">
+              <p>Total: {filteredAttendance.length}</p>
+              <p>Present: {filteredAttendance.filter(r => r.status === 'present').length}</p>
+              <p>Absent: {filteredAttendance.filter(r => r.status === 'absent').length}</p>
+            </div>
 
-              return (
-                <div key={record.id + record.siteManagerId} className="attendance-card">
-                  <div className="attendance-info">
-                    <h4>{employee?.name || 'Unknown Employee'}</h4>
-                    <p className={`status-label ${record.status}`}>
-                      Status: {record.status}
-                    </p>
-                    <p className="submitted-by">
-                      Submitted by: {manager?.name || 'Unknown Manager'}
-                    </p>
-                  </div>
-                  {record.status === 'present' && record.image && (
-                    <div className="attendance-photo">
-                      <img
-                        src={record.image}
-                        alt={`Attendance proof for ${employee?.name}`}
-                      />
+            <div className="attendance-grid">
+              {filteredAttendance.map((record) => {
+                const employee = employees.find(emp => emp.id === record.id);
+                const manager = siteManagers.find(m => m.id === record.siteManagerId);
+
+                return (
+                  <div
+                    key={`${record.id}-${record.date}-${record.siteManagerId}`}
+                    className="attendance-card"
+                  >
+                    <div className="attendance-info">
+                      <h4>{employee?.name || 'Unknown Employee'}</h4>
+                      <p className={`status-label ${record.status}`}>
+                        Status: {record.status}
+                      </p>
+                      <p className="submitted-by">
+                        Submitted by: {manager?.name || 'Unknown Manager'}
+                      </p>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                    {record.status === 'present' && record.image && (
+                      <div className="attendance-photo">
+                        <img
+                          src={record.image}
+                          alt={`Attendance proof for ${employee?.name}`}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 
       {/* Daily Reports Section */}
       <div className="daily-reports">
-        <h3>Daily Reports for {attendanceDate}</h3>
+        <h3>Daily Reports for {attendanceDate || 'All Dates'}</h3>
 
         {filteredReports.length === 0 ? (
-          <p className="no-records">No daily reports for this date and manager.</p>
+          <p className="no-records">
+            No daily reports found for {attendanceDate || 'any date'}
+            {selectedManagerId && ` under manager ${siteManagers.find(m => m.id === selectedManagerId)?.name || 'Unknown'}`}.
+          </p>
         ) : (
           <div className="report-grid">
             {filteredReports.map((report, idx) => {

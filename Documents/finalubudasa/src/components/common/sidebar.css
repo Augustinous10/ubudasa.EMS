@@ -1,18 +1,17 @@
 .sidebar {
   width: 260px;
-  background-color: #111827; /* Dark navy */
   height: 100vh;
   position: fixed;
   top: 0;
   left: -260px;
-  z-index: 1000;
-  transition: left 0.3s ease;
-  overflow-y: auto;
+  background-color: #111827;
+  color: #d1d5db;
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
-  border-right: 1px solid #1f2937;
+  padding: 16px 0;
+  transition: left 0.3s ease;
+  z-index: 1000;
+
 }
 
 .sidebar.open {
@@ -22,25 +21,22 @@
 .sidebar-header {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 32px;
+  padding: 0 16px;
+  margin-bottom: 16px;
 }
 
 .close-btn {
   background: none;
   border: none;
-  color: #ffffffcc;
+  color: #ccc;
   font-size: 24px;
   cursor: pointer;
-  transition: color 0.2s;
 }
 
-.close-btn:hover {
-  color: #ffffff;
-}
-
-.sidebar-nav {
+.sidebar-content {
   flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
 }
 
 .sidebar-nav ul {
@@ -52,42 +48,92 @@
   gap: 12px;
 }
 
-.sidebar-nav li a {
-  color: #d1d5db;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
+.sidebar-nav a {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  border-radius: 8px;
-  transition: background-color 0.2s, color 0.2s;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
 }
 
-.sidebar-nav li a:hover {
+.sidebar-nav a:hover {
   background-color: #1f2937;
-  color: #ffffff;
+  color: #fff;
 }
 
 .sidebar-nav a svg {
   font-size: 18px;
-  flex-shrink: 0;
-  color: #9ca3af;
+  color: #000000;
   transition: color 0.2s;
 }
 
-.sidebar-nav li a:hover svg {
-  color: #ffffff;
+.sidebar-nav a:hover svg {
+  color: #fff;
 }
 
-/* Responsive for wider screens */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid #1f2937;
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  color: #000409;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #1f2937;
+  color: #fff;
+}
+
+.logout-btn svg {
+  color: #000000;
+}
+
+.logout-btn:hover svg {
+  color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .sidebar {
+    width: 100%;
+    max-width: 260px;
+    left: -100%;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .sidebar-content {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+  }
+}
+
+/* Desktop */
 @media (min-width: 768px) {
   .sidebar {
     position: relative;
     left: 0;
-    height: auto;
-    min-height: 100vh;
+    height: 100vh;
   }
 
   .close-btn {

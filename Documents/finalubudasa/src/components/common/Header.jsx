@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './header.css';
-import { FaBars, FaCog, FaSignOutAlt, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import {
+  FaBars,
+  FaCog,
+  FaSignOutAlt,
+  FaPaintBrush,
+  FaTimes,
+  FaUsers,
+  FaClipboardList,
+  FaMoneyBill,
+  FaRegFileAlt,
+  FaTachometerAlt,
+  FaUserShield // ✅ Added icon for Site Manager
+} from 'react-icons/fa';
 
 const Header = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -42,14 +54,28 @@ const Header = () => {
       {/* Mobile Drawer */}
       {drawerOpen && (
         <div className="mobile-drawer">
-          <button className="close-drawer" onClick={toggleDrawer}><FaTimes /></button>
+          <button className="close-drawer" onClick={toggleDrawer}>
+            <FaTimes />
+          </button>
           <nav className="drawer-nav">
-            <Link to="/" onClick={toggleDrawer}>Dashboard</Link>
-            <Link to="/employees" onClick={toggleDrawer}>Employees</Link>
-            <Link to="/attendance" onClick={toggleDrawer}>Attendance</Link>
-            <Link to="/payroll" onClick={toggleDrawer}>Payroll</Link>
-            <Link to="/daily-report" onClick={toggleDrawer}>Daily Report</Link>
-            <Link to="/settings" onClick={toggleDrawer}>Settings</Link>
+            <Link to="/" onClick={toggleDrawer}>
+              <FaTachometerAlt /> <span>Dashboard</span>
+            </Link>
+            <Link to="/employees" onClick={toggleDrawer}>
+              <FaUsers /> <span>Employees</span>
+            </Link>
+            <Link to="/attendance" onClick={toggleDrawer}>
+              <FaClipboardList /> <span>Attendance</span>
+            </Link>
+            <Link to="/payroll" onClick={toggleDrawer}>
+              <FaMoneyBill /> <span>Payroll</span>
+            </Link>
+            <Link to="/daily-report" onClick={toggleDrawer}>
+              <FaRegFileAlt /> <span>Daily Report</span>
+            </Link>
+            <Link to="/site-manager" onClick={toggleDrawer}>
+              <FaUserShield /> <span>Site Manager</span> {/* ✅ New */}
+            </Link>
           </nav>
         </div>
       )}

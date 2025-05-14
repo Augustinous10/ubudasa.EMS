@@ -1,5 +1,5 @@
-// src/context/SiteManagerContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// src/context/SiteManagerContext.jsx
+import React, { createContext, useContext, useState } from 'react';
 
 const SiteManagerContext = createContext();
 
@@ -8,19 +8,16 @@ export const useSiteManager = () => useContext(SiteManagerContext);
 export const SiteManagerProvider = ({ children }) => {
   const [siteManagers, setSiteManagers] = useState([]);
 
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('siteManagers')) || [];
-    setSiteManagers(stored);
-  }, []);
-
   const addSiteManager = (manager) => {
-    const updated = [...siteManagers, manager];
-    setSiteManagers(updated);
-    localStorage.setItem('siteManagers', JSON.stringify(updated));
+    setSiteManagers(prev => [...prev, { id: Date.now(), ...manager }]);
+  };
+
+  const removeSiteManager = (id) => {
+    setSiteManagers(prev => prev.filter(m => m.id !== id));
   };
 
   return (
-    <SiteManagerContext.Provider value={{ siteManagers, addSiteManager }}>
+    <SiteManagerContext.Provider value={{ siteManagers, addSiteManager, removeSiteManager }}>
       {children}
     </SiteManagerContext.Provider>
   );

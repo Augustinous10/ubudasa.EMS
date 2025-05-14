@@ -264,4 +264,4 @@ const Employees = ({ onMarkAttendance }) => {
   );
 };
 
-export default Employees;
+export default Employees
