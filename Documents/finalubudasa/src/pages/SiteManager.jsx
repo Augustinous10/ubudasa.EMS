@@ -1,140 +1,115 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './siteManager.css';
+import { useAuth } from '../context/AuthContext'; // Adjust path if needed
+import { useNavigate } from 'react-router-dom';
 
-const SiteManager = () => {
-  const [managers, setManagers] = useState([]);
-  const [newManager, setNewManager] = useState({
-    name: '',
-    phone: '',
-    site: '',
-    permissions: {
-      view: false,
-      edit: false,
-      delete: false,
-    },
-  });
+export default function SiteManagerPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    setNewManager({ ...newManager, [e.target.name]: e.target.value });
-  };
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', phone: '' });
+  const [message, setMessage] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [siteManagers, setSiteManagers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handlePermissionChange = (e) => {
-    setNewManager({
-      ...newManager,
-      permissions: {
-        ...newManager.permissions,
-        [e.target.name]: e.target.checked,
-      },
-    });
-  };
+  useEffect(() => {
+    // If user is not an ADMIN, redirect them away
+    if (user?.role !== 'ADMIN') {
+      navigate('/not-authorized'); // Create this route or redirect to dashboard
+    } else {
+      fetchSiteManagers();
+    }
+  }, [user, navigate]);
 
-  const handleAddManager = (e) => {
-    e.preventDefault();
-    if (newManager.name && newManager.phone && newManager.site) {
-      setManagers([...managers, { ...newManager, id: Date.now() }]);
-      setNewManager({
-        name: '',
-        phone: '',
-        site: '',
-        permissions: { view: false, edit: false, delete: false },
+  const fetchSiteManagers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:5000/api/users?role=SITE_MANAGER', {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      setSiteManagers(res.data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleDelete = (id) => {
-    setManagers(managers.filter((m) => m.id !== id));
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/users/register', {
+        ...formData,
+        role: 'SITE_MANAGER',
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setMessage('Site Manager added!');
+      fetchSiteManagers();
+      setFormData({ name: '', email: '', password: '', phone: '' });
+      setShowForm(false);
+    } catch (error) {
+      setMessage('Error adding site manager');
+    }
+  };
+
+  const filteredManagers = siteManagers.filter(m =>
+    m.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="site-manager-page">
-      <h2>Site Manager Management</h2>
-
-      <form onSubmit={handleAddManager} className="manager-form">
+    <div className="site-manager-container">
+      <h2>Manage Site Managers</h2>
+      <div className="header-actions">
         <input
           type="text"
-          name="name"
-          placeholder="Full Name"
-          value={newManager.name}
-          onChange={handleInputChange}
-          required
+          placeholder="Search site managers..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone Number"
-          value={newManager.phone}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="text"
-          name="site"
-          placeholder="Site Name / Location"
-          value={newManager.site}
-          onChange={handleInputChange}
-          required
-        />
-
-        <div className="permissions">
-          <label>
-            <input
-              type="checkbox"
-              name="view"
-              checked={newManager.permissions.view}
-              onChange={handlePermissionChange}
-            />
-            Can View
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="edit"
-              checked={newManager.permissions.edit}
-              onChange={handlePermissionChange}
-            />
-            Can Edit
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="delete"
-              checked={newManager.permissions.delete}
-              onChange={handlePermissionChange}
-            />
-            Can Delete
-          </label>
-        </div>
-
-        <button type="submit">Add Manager</button>
-      </form>
-
-      <div className="manager-list">
-        <h3>Existing Site Managers</h3>
-        {managers.length === 0 ? (
-          <p>No site managers added yet.</p>
-        ) : (
-          <ul>
-            {managers.map((manager) => (
-              <li key={manager.id}>
-                <strong>{manager.name}</strong><br />
-                Phone: {manager.phone}<br />
-                Site: {manager.site}
-                <div className="manager-permissions">
-                  <span>Permissions:</span>
-                  {Object.entries(manager.permissions)
-                    .filter(([_, allowed]) => allowed)
-                    .map(([perm]) => (
-                      <span key={perm} className="perm">{perm}</span>
-                    ))}
-                </div>
-                <button onClick={() => handleDelete(manager.id)}>Remove</button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <button onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Close Form' : 'Add New Site Manager'}
+        </button>
       </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="site-manager-form">
+          <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} required />
+          <input type="text" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
+          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
+          <button type="submit">Submit</button>
+        </form>
+      )}
+
+      {message && <p className="message">{message}</p>}
+
+      <table className="site-manager-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredManagers.map(manager => (
+            <tr key={manager._id}>
+              <td>{manager.name}</td>
+              <td>{manager.email}</td>
+              <td>
+                <button>Edit</button>
+                <button className="delete">Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default SiteManager;
+}

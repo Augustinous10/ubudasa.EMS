@@ -12,7 +12,7 @@ import {
   FaMoneyBill,
   FaRegFileAlt,
   FaTachometerAlt,
-  FaUserShield // ✅ Added icon for Site Manager
+  FaUserShield
 } from 'react-icons/fa';
 
 const Header = () => {
@@ -58,24 +58,12 @@ const Header = () => {
             <FaTimes />
           </button>
           <nav className="drawer-nav">
-            <Link to="/" onClick={toggleDrawer}>
-              <FaTachometerAlt /> <span>Dashboard</span>
-            </Link>
-            <Link to="/employees" onClick={toggleDrawer}>
-              <FaUsers /> <span>Employees</span>
-            </Link>
-            <Link to="/attendance" onClick={toggleDrawer}>
-              <FaClipboardList /> <span>Attendance</span>
-            </Link>
-            <Link to="/payroll" onClick={toggleDrawer}>
-              <FaMoneyBill /> <span>Payroll</span>
-            </Link>
-            <Link to="/daily-report" onClick={toggleDrawer}>
-              <FaRegFileAlt /> <span>Daily Report</span>
-            </Link>
-            <Link to="/site-manager" onClick={toggleDrawer}>
-              <FaUserShield /> <span>Site Manager</span> {/* ✅ New */}
-            </Link>
+            <Link to="/" onClick={toggleDrawer}><FaTachometerAlt /> <span>Dashboard</span></Link>
+            <Link to="/employees" onClick={toggleDrawer}><FaUsers /> <span>Employees</span></Link>
+            <Link to="/attendance" onClick={toggleDrawer}><FaClipboardList /> <span>Attendance</span></Link>
+            <Link to="/payroll" onClick={toggleDrawer}><FaMoneyBill /> <span>Payroll</span></Link>
+            <Link to="/daily-report" onClick={toggleDrawer}><FaRegFileAlt /> <span>Daily Report</span></Link>
+            <Link to="/site-manager" onClick={toggleDrawer}><FaUserShield /> <span>Site Manager</span></Link>
           </nav>
         </div>
       )}

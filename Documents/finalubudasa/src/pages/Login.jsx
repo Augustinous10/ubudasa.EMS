@@ -1,90 +1,69 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // ✅ Uses AuthContext
+import './login.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user, login } = useAuth(); // ✅ Access auth state and login function
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('Logging in with:', email, password); // Debugging line
+  useEffect(() => {
+    // Auto-redirect if user already logged in
+    if (user?.role === 'ADMIN') {
+      navigate('/admin/dashboard');
+    } else if (user?.role === 'SITE_MANAGER') {
+      navigate('/site-manager/dashboard');
+    }
+  }, [user, navigate]);
 
+  const handleLogin = async () => {
+    setLoading(true);
     try {
-      await login({ email, password });
-      navigate('/'); // Redirect to home page after successful login
+      const loggedInUser = await login({ phone, password });
+
+      if (loggedInUser.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (loggedInUser.role === 'SITE_MANAGER') {
+        navigate('/site-manager/dashboard');
+      } else {
+        alert('Unknown role: ' + loggedInUser.role);
+      }
     } catch (err) {
-      alert('Login failed');
-      console.error('Login error:', err); // Detailed error in console
+      console.error('Login error:', err);
+      alert('Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container" style={styles.container}>
-      <form onSubmit={handleSubmit} className="auth-form" style={styles.form}>
-        <h2 style={styles.title}>Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-          required
-        />
-        <button type="submit" style={styles.button}>Login</button>
-      </form>
+    <div className="login-container">
+      <div className="login-header">
+        <img src="/logo192.png" alt="Logo" className="login-logo" />
+        <h2>Welcome Back!</h2>
+        <p className="login-subtext">Please sign in to continue</p>
+      </div>
+
+      <input
+        placeholder="Phone"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+      <input
+        placeholder="Password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f4f4f4',
-  },
-  form: {
-    backgroundColor: 'white',
-    padding: '2rem',
-    borderRadius: '10px',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    maxWidth: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: '1rem',
-  },
-  input: {
-    padding: '0.75rem',
-    fontSize: '1rem',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    padding: '0.75rem',
-    fontSize: '1rem',
-    borderRadius: '5px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    cursor: 'pointer',
-  },
 };
 
 export default Login;

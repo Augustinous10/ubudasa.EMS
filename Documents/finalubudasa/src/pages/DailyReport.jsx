@@ -1,52 +1,75 @@
 import React, { useState } from 'react';
+import { createReport } from '../api/reportApi'; // adjust if DailyReport.jsx is deeper
 import './dailyReport.css';
 
 const DailyReport = () => {
-  const [report, setReport] = useState({
-    date: new Date().toISOString().split('T')[0],
-    time: '',
-    activities: '',
+  const [formData, setFormData] = useState({
+    date: '',
+    activitiesDone: '',
     nextDayPlan: '',
     comments: '',
   });
 
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setReport({ ...report, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitted Report:', report);
-    // TODO: Send report to backend API
+    setSubmitting(true);
+    setMessage('');
+
+    try {
+      await createReport(formData); // use the imported API function
+      setMessage('✅ Report submitted successfully!');
+      setFormData({ date: '', activitiesDone: '', nextDayPlan: '', comments: '' });
+    } catch (error) {
+      console.error('Report submission error:', error);
+      setMessage(`❌ Failed to submit report: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="report-container">
-      <h2>Daily Site Manager Report</h2>
-      <form onSubmit={handleSubmit} className="report-form">
-        <label>
-          Date:
-          <input type="date" name="date" value={report.date} onChange={handleChange} />
-        </label>
-        <label>
-          Time (e.g. 08:00 - 17:00):
-          <input type="text" name="time" value={report.time} onChange={handleChange} />
-        </label>
-        <label>
-          Activities Completed:
-          <textarea name="activities" rows="4" value={report.activities} onChange={handleChange} />
-        </label>
-        <label>
-          Plan for Next Day:
-          <textarea name="nextDayPlan" rows="3" value={report.nextDayPlan} onChange={handleChange} />
-        </label>
-        <label>
-          Comments:
-          <textarea name="comments" rows="2" value={report.comments} onChange={handleChange} />
-        </label>
-        <button type="submit">Submit Report</button>
+    <div className="container">
+      <h2>Submit Daily Report</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="activitiesDone"
+          placeholder="Activities Done"
+          value={formData.activitiesDone}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="nextDayPlan"
+          placeholder="Next Day Plan"
+          value={formData.nextDayPlan}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="comments"
+          placeholder="Comments"
+          value={formData.comments}
+          onChange={handleChange}
+        />
+        <button type="submit" disabled={submitting}>
+          {submitting ? 'Submitting...' : 'Submit Report'}
+        </button>
       </form>
+      {message && <p className="message">{message}</p>}
     </div>
   );
 };

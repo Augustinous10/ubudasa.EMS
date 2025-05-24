@@ -1,33 +1,26 @@
-/* header.css */
-
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #0d1321;
+  padding: 0.8rem 1.5rem;
+  background-color: #1e1e2f;
   color: white;
   position: relative;
-  z-index: 1001;
-}
-
-.left-section {
-  display: flex;
-  align-items: center;
-}
-
-.hamburger {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  margin-right: 10px;
+  z-index: 10;
 }
 
 .logo {
-  font-size: 1.2rem;
-  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
 }
 
 .profile-container {
@@ -35,26 +28,27 @@
 }
 
 .profile-pic {
-  width: 40px;
-  height: 40px;
   border-radius: 50%;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
 }
 
 .dropdown {
   position: absolute;
-  right: 0;
   top: 50px;
+  right: 0;
   background: white;
   color: black;
   list-style: none;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  padding: 10px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  width: 160px;
 }
 
 .dropdown li {
-  padding: 8px 10px;
+  padding: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -64,50 +58,43 @@
   background-color: #f0f0f0;
 }
 
-.dropdown li svg {
-  margin-right: 8px;
-}
-
-/* Mobile Drawer */
 .mobile-drawer {
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px;
   height: 100%;
-  background-color: #0d1321;
+  width: 250px;
+  background: #1e1e2f;
   color: white;
+  padding: 1rem;
   z-index: 999;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
   transition: transform 0.3s ease-in-out;
+}
+
+.drawer-nav a {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  color: white;
+  text-decoration: none;
+}
+
+.drawer-nav a span {
+  margin-left: 10px;
 }
 
 .close-drawer {
   background: none;
   border: none;
+  font-size: 1.4rem;
   color: white;
-  font-size: 1.5rem;
-  align-self: flex-end;
-  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
-.drawer-nav {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-}
-
-.drawer-nav a {
-  color: white;
-  text-decoration: none;
-  padding: 12px 0;
-  font-size: 1.1rem;
-}
-
-.drawer-nav a:hover {
-  background-color: #1c2230;
-  padding-left: 10px;
-  border-radius: 4px;
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
 }

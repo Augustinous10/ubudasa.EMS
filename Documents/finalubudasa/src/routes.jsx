@@ -11,32 +11,62 @@ import Employees from './pages/Employees';
 import Attendance from './pages/Attendance';
 import Payroll from './pages/Payroll';
 import DailyReport from './pages/DailyReport';
-import SiteManager from './pages/SiteManager'; // ✅ Already Added
+import SiteManager from './pages/SiteManager';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import SiteManagerDashboard from './pages/siteManager/SiteManagerDashboard';
 import Login from './pages/Login';
+import Unauthorized from './pages/Unauthorized';
 
-// Protected Route
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
 };
 
 const AppRoutes = ({ onMarkAttendance }) => {
   return (
     <Routes>
-      {/* Public Route */}
+      {/* Public Routes */}
       <Route path="/login" element={<Login />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* Protected Routes inside Main Layout */}
-      <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+      {/* Shared Protected Layout */}
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'SITE_MANAGER']}>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        {/* Common Dashboard Routes Inside Layout */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/site-manager/dashboard" element={<SiteManagerDashboard />} />
+
+        {/* Other pages inside layout */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/employees" element={<Employees onMarkAttendance={onMarkAttendance} />} />
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/payroll" element={<Payroll />} />
         <Route path="/daily-report" element={<DailyReport />} />
-        <Route path="/site-manager" element={<SiteManager />} /> {/* ✅ Site Managers Route */}
+        <Route
+          path="/site-manager"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'SITE_MANAGER']}>
+              <SiteManager />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
-      {/* Redirect unknown routes */}
+      {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

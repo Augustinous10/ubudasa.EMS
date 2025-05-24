@@ -1,44 +1,63 @@
-import { createContext, useContext, useState } from 'react';
+// src/context/AuthContext.js
+import { createContext, useContext, useState, useEffect } from 'react';
 
-// Create Auth Context
 const AuthContext = createContext();
-
-// Custom hook to use Auth Context
 export const useAuth = () => useContext(AuthContext);
 
-// AuthProvider component to wrap the app with context
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    const token = localStorage.getItem('token');
+    return token ? parseJwt(token) : null;
   });
 
-  const login = async ({ email, password }) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email === 'admin@ubudasa.com' && password === 'admin123') {
-          const loggedInUser = { name: 'Admin User', email };
-          setUser(loggedInUser);
-          localStorage.setItem('user', JSON.stringify(loggedInUser));
-          resolve(loggedInUser);
-        } else {
-          reject('Invalid credentials');
-        }
-      }, 500);
+  const parseJwt = (token) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const login = async ({ phone, password }) => {
+    const res = await fetch('http://localhost:5000/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, password }),
     });
+
+    const data = await res.json();
+    if (!res.ok || !data.token) throw new Error(data.message || 'Login failed');
+
+    const decodedUser = parseJwt(data.token);
+    localStorage.setItem('token', data.token);
+    setUser(decodedUser);
+    return decodedUser;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
-  const value = {
-    user,
-    login,
-    logout,
-    isAuthenticated: !!user, // Add this for convenience
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedUser = parseJwt(token);
+      setUser(decodedUser);
+    }
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
