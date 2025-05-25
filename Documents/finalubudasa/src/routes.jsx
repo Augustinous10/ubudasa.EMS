@@ -56,6 +56,7 @@ const AppRoutes = ({ onMarkAttendance }) => {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/payroll" element={<Payroll />} />
         <Route path="/daily-report" element={<DailyReport />} />
+        
         <Route
           path="/site-manager"
           element={
