@@ -32,11 +32,10 @@ export async function getAttendanceBySiteManager(siteManagerId) {
   return handleResponse(res);
 }
 
-// Get filtered attendance
-export async function getAttendanceByFilter(filterType, filterValue, siteManagerId) {
+// Get filtered attendance by date and/or site manager ID
+export async function getAttendanceByFilter(date, siteManagerId) {
   const url = new URL(`${API_URL}/filter`, window.location.origin);
-  url.searchParams.append('filterType', filterType);
-  url.searchParams.append('filterValue', filterValue);
+  if (date) url.searchParams.append('date', date);
   if (siteManagerId) url.searchParams.append('siteManagerId', siteManagerId);
 
   const res = await fetch(url);
@@ -55,7 +54,7 @@ export async function createAttendanceSheet(data) {
 
 // Finalize attendance with group image upload (expects FormData)
 export async function finalizeAttendance(formData) {
-  const res = await fetch(`${API_URL}/attendance/finalize`, {
+  const res = await fetch(`${API_URL}/finalize`, {
     method: 'POST',
     body: formData,
   });

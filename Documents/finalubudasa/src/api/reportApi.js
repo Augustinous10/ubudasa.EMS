@@ -1,18 +1,29 @@
+// reportApi.js
 import axios from 'axios';
 
 const API = axios.create({
   baseURL: 'http://localhost:5000/api',
 });
 
-// Get token from localStorage
+// Function to get authorization headers
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');
   return {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: token ? `Bearer ${token}` : '' },
   };
 };
 
-export const createReport = (data) => API.post('/reports', data, getAuthHeader());
-export const getAllReports = () => API.get('/reports', getAuthHeader());
-export const getReportsByFilter = (params) =>
-  API.get('/reports/filter', { ...getAuthHeader(), params });
+// Create a new report (POST)
+export const createReport = async (data) => {
+  const response = await API.post('/reports', data, getAuthHeader());
+  return response.data;
+};
+
+// Get reports filtered by query params (GET)
+export const getReportsByFilter = async (params) => {
+  const response = await API.get('/reports/filter', {
+    ...getAuthHeader(),
+    params,
+  });
+  return response.data;
+};
