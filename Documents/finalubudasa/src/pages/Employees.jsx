@@ -1,7 +1,10 @@
-// AttendancePage.jsx
+// src/pages/AttendancePage.jsx
 import React, { useState, useEffect } from 'react';
 import './employees.css';
 import { checkRecentAttendance, finalizeAttendance } from '../api/employeeApi';
+
+const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/deg5swakx/upload';
+const CLOUDINARY_UPLOAD_PRESET = 'employee_preset';
 
 export default function AttendancePage() {
   const [phone, setPhone] = useState('');
@@ -17,11 +20,8 @@ export default function AttendancePage() {
   }, [addedEmployees]);
 
   const handleCheckRecentAttendance = async (phone) => {
-    console.log('Checking attendance for phone:', phone);
     try {
       const res = await checkRecentAttendance(phone);
-      console.log('Response from check-recent:', res.data);
-
       if (res.data.exists || res.data.attendedRecently) {
         const emp = res.data.employee || { name: '', phone: '', salary: 0 };
         setAutoFillEmployee({
@@ -29,13 +29,10 @@ export default function AttendancePage() {
           phone: emp.phone,
           currentSalary: emp.salary,
         });
-        setShowAddForm(true);
-        return;
       } else {
         setAutoFillEmployee(null);
-        setShowAddForm(true);
-        return;
       }
+      setShowAddForm(true);
     } catch (error) {
       console.error('Error checking recent attendance:', error.response?.data || error.message);
       setAutoFillEmployee(null);
@@ -45,17 +42,14 @@ export default function AttendancePage() {
 
   const addEmployee = async () => {
     if (!phone) return alert('Please enter a phone number');
-
     if (addedEmployees.some((emp) => emp.phone === phone)) {
       return alert('Employee already added today.');
     }
-
     await handleCheckRecentAttendance(phone);
   };
 
   const handleImageChange = (e) => {
     if (e.target.files.length > 0) {
-      console.log('Group image selected:', e.target.files[0]);
       setGroupImage(e.target.files[0]);
     }
   };
@@ -66,20 +60,6 @@ export default function AttendancePage() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('groupImage', groupImage);
-    formData.append('date', today);
-    formData.append(
-      'employees',
-      JSON.stringify(
-        addedEmployees.map((emp) => ({
-          phone: emp.phone,
-          name: emp.name,
-          salary_today: Number(emp.currentSalary),
-        }))
-      )
-    );
-
     const token = localStorage.getItem('token');
     if (!token) {
       alert('You must be logged in to submit attendance.');
@@ -87,8 +67,36 @@ export default function AttendancePage() {
     }
 
     try {
-      const res = await finalizeAttendance(formData);
-      console.log('Attendance submission response:', res.data);
+      // Upload image to Cloudinary
+      const imgForm = new FormData();
+      imgForm.append('file', groupImage);
+      imgForm.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+      const cloudRes = await fetch(CLOUDINARY_URL, {
+        method: 'POST',
+        body: imgForm,
+      });
+
+      const cloudData = await cloudRes.json();
+      const groupImageUrl = cloudData.secure_url;
+
+      if (!groupImageUrl) {
+        throw new Error('Image upload failed.');
+      }
+
+      // Prepare and send attendance data
+      const payload = {
+        date: today,
+        groupImageUrl,
+        employees: addedEmployees.map(emp => ({
+          phone: emp.phone,
+          name: emp.name,
+          salary_today: Number(emp.currentSalary),
+        })),
+      };
+
+      await finalizeAttendance(payload);
+
       alert('Attendance submitted!');
       setAddedEmployees([]);
       setGroupImage(null);
@@ -142,11 +150,8 @@ export default function AttendancePage() {
             placeholder="Name"
             value={autoFillEmployee?.name ?? newEmployee.name}
             onChange={(e) => {
-              if (autoFillEmployee) {
-                setAutoFillEmployee({ ...autoFillEmployee, name: e.target.value });
-              } else {
-                setNewEmployee({ ...newEmployee, name: e.target.value });
-              }
+              const updated = { ...autoFillEmployee ?? newEmployee, name: e.target.value };
+              autoFillEmployee ? setAutoFillEmployee(updated) : setNewEmployee(updated);
             }}
           />
           <input
@@ -154,11 +159,8 @@ export default function AttendancePage() {
             placeholder="Phone"
             value={autoFillEmployee?.phone ?? newEmployee.phone}
             onChange={(e) => {
-              if (autoFillEmployee) {
-                setAutoFillEmployee({ ...autoFillEmployee, phone: e.target.value });
-              } else {
-                setNewEmployee({ ...newEmployee, phone: e.target.value });
-              }
+              const updated = { ...autoFillEmployee ?? newEmployee, phone: e.target.value };
+              autoFillEmployee ? setAutoFillEmployee(updated) : setNewEmployee(updated);
             }}
           />
           <input
@@ -166,11 +168,8 @@ export default function AttendancePage() {
             placeholder="Salary (RWF)"
             value={autoFillEmployee?.currentSalary ?? newEmployee.currentSalary}
             onChange={(e) => {
-              if (autoFillEmployee) {
-                setAutoFillEmployee({ ...autoFillEmployee, currentSalary: e.target.value });
-              } else {
-                setNewEmployee({ ...newEmployee, currentSalary: e.target.value });
-              }
+              const updated = { ...autoFillEmployee ?? newEmployee, currentSalary: e.target.value };
+              autoFillEmployee ? setAutoFillEmployee(updated) : setNewEmployee(updated);
             }}
           />
           <button onClick={handleSaveAndAdd}>Save & Add</button>

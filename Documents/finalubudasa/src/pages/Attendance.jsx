@@ -1,165 +1,165 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  getAllAttendance,
+  getAttendanceByFilter,
+} from '../api/attendanceApi';
+import { getAllSiteManagers } from '../api/userApi';
 import './attendance.css';
-import { useEmployee } from '../context/EmployeeContext';
-import { useDailyReport } from '../context/DailyReportContext';
 
-const Attendance = ({ attendanceRecords, siteManagers = [] }) => {
-  const { employees = [] } = useEmployee();
-  const dailyReportContext = useDailyReport();
-  const dailyReports = useMemo(() => dailyReportContext?.dailyReports || [], [dailyReportContext]);
-
-  const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedManagerId, setSelectedManagerId] = useState('');
-  const [filteredAttendance, setFilteredAttendance] = useState([]);
-  const [filteredReports, setFilteredReports] = useState([]);
-
-  const filterData = useCallback(() => {
-    const filteredAtt = Array.isArray(attendanceRecords)
-      ? attendanceRecords.filter(record => {
-          const matchesDate = record.date === attendanceDate;
-          const matchesManager = selectedManagerId ? record.siteManagerId === selectedManagerId : true;
-          return matchesDate && matchesManager;
-        })
-      : [];
-
-    const filteredRep = Array.isArray(dailyReports)
-      ? dailyReports.filter(report => {
-          const matchesDate = report.date === attendanceDate;
-          const matchesManager = selectedManagerId ? report.managerId === selectedManagerId : true;
-          return matchesDate && matchesManager;
-        })
-      : [];
-
-    setFilteredAttendance(filteredAtt);
-    setFilteredReports(filteredRep);
-  }, [attendanceRecords, dailyReports, attendanceDate, selectedManagerId]);
+export default function AttendanceApp() {
+  const [attendances, setAttendances] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
+  const [siteManagers, setSiteManagers] = useState([]);
+  const [selectedManager, setSelectedManager] = useState('');
 
   useEffect(() => {
-    filterData();
-  }, [filterData]);
+    loadAttendances();
+    loadSiteManagers();
+  }, []);
 
-  const resetFilters = () => {
-    setAttendanceDate('');
-    setSelectedManagerId('');
-  };
+  async function loadAttendances() {
+    setLoading(true);
+    const data = await getAllAttendance();
+    setAttendances(data);
+    setLoading(false);
+  }
+
+  async function loadSiteManagers() {
+    try {
+      const data = await getAllSiteManagers();
+      const managersArray = Array.isArray(data)
+        ? data
+        : data.siteManagers || [];
+      setSiteManagers(managersArray);
+    } catch (err) {
+      console.error('Failed to load site managers', err);
+      setSiteManagers([]);
+    }
+  }
+
+  async function handleFilter() {
+    if (!dateFilter && !selectedManager) return loadAttendances();
+    setLoading(true);
+    const data = await getAttendanceByFilter(
+      dateFilter ? 'date' : '',
+      dateFilter,
+      selectedManager || undefined
+    );
+    setAttendances(data);
+    setLoading(false);
+  }
+
+  function getSiteManagerName(siteManager) {
+    if (!siteManager) return 'Unknown';
+
+    if (typeof siteManager === 'object' && siteManager.name) {
+      return siteManager.name;
+    }
+
+    const manager = siteManagers.find(m => m._id === siteManager);
+    return manager ? manager.name : siteManager;
+  }
 
   return (
-    <section className="attendance-report-container">
-      <header className="attendance-header">
-        <h2>Attendance Report</h2>
+    <div className="attendance-app">
+      <h1 className="title">Attendance Management</h1>
 
-        <div className="filters">
-          <div className="date-filter">
-            <label htmlFor="attendance-date">Select Date:</label>
-            <input
-              type="date"
-              id="attendance-date"
-              value={attendanceDate}
-              onChange={(e) => setAttendanceDate(e.target.value)}
-            />
-          </div>
+      <div className="filters">
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={e => setDateFilter(e.target.value)}
+          className="input"
+        />
+        <select
+          value={selectedManager}
+          onChange={e => setSelectedManager(e.target.value)}
+          className="input"
+        >
+          <option value="">All Managers</option>
+          {Array.isArray(siteManagers) &&
+            siteManagers.map(manager => (
+              <option key={manager._id} value={manager._id}>
+                {manager.name}
+              </option>
+            ))}
+        </select>
+        <button onClick={handleFilter} className="button primary">
+          Filter
+        </button>
+        <button
+          onClick={() => {
+            setDateFilter('');
+            setSelectedManager('');
+            loadAttendances();
+          }}
+          className="button secondary"
+        >
+          Clear
+        </button>
+      </div>
 
-          <div className="manager-filter">
-            <label htmlFor="site-manager">Site Manager:</label>
-            <select
-              id="site-manager"
-              value={selectedManagerId}
-              onChange={(e) => setSelectedManagerId(e.target.value)}
-            >
-              <option value="">All</option>
-              {siteManagers.map((manager) => (
-                <option key={manager.id} value={manager.id}>
-                  {manager.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button className="reset-button" onClick={resetFilters}>Reset Filters</button>
-        </div>
-      </header>
-
-      {/* Attendance Section */}
-      <div className="attendance-list">
-        <h3>Attendance for {attendanceDate || 'All Dates'}</h3>
-
-        {filteredAttendance.length === 0 ? (
-          <p className="no-records">
-            No attendance records found for {attendanceDate || 'any date'}
-            {selectedManagerId && ` under manager ${siteManagers.find(m => m.id === selectedManagerId)?.name || 'Unknown'}`}.
-          </p>
-        ) : (
-          <>
-            <div className="summary">
-              <p>Total: {filteredAttendance.length}</p>
-              <p>Present: {filteredAttendance.filter(r => r.status === 'present').length}</p>
-              <p>Absent: {filteredAttendance.filter(r => r.status === 'absent').length}</p>
-            </div>
-
-            <div className="attendance-grid">
-              {filteredAttendance.map((record) => {
-                const employee = employees.find(emp => emp.id === record.id);
-                const manager = siteManagers.find(m => m.id === record.siteManagerId);
-
-                return (
-                  <div
-                    key={`${record.id}-${record.date}-${record.siteManagerId}`}
-                    className="attendance-card"
-                  >
-                    <div className="attendance-info">
-                      <h4>{employee?.name || 'Unknown Employee'}</h4>
-                      <p className={`status-label ${record.status}`}>
-                        Status: {record.status}
-                      </p>
-                      <p className="submitted-by">
-                        Submitted by: {manager?.name || 'Unknown Manager'}
-                      </p>
-                    </div>
-                    {record.status === 'present' && record.image && (
-                      <div className="attendance-photo">
-                        <img
-                          src={record.image}
-                          alt={`Attendance proof for ${employee?.name}`}
-                        />
-                      </div>
+      <div className="table-container">
+        <table className="attendance-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Site Manager</th>
+              <th>Group Image</th>
+              <th>Employees</th>
+              <th>Salary (RWF)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="center">
+                  Loading...
+                </td>
+              </tr>
+            ) : attendances.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="center">
+                  No attendance records found.
+                </td>
+              </tr>
+            ) : (
+              attendances.map(att => (
+                <tr key={att._id}>
+                  <td>{new Date(att.date).toLocaleDateString()}</td>
+                  <td>{getSiteManagerName(att.siteManager)}</td>
+                  <td>
+                    {att.groupImage ? (
+                      <img
+                        src={att.groupImage}
+                        alt="Group"
+                        style={{ width: '100px', height: 'auto' }}
+                      />
+                    ) : (
+                      'N/A'
                     )}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        )}
+                  </td>
+                  <td>
+                    {att.attendedEmployees.map(ae => (
+                      <div key={ae.employee._id || ae.employee}>
+                        {ae.employee.name || ae.employee}
+                      </div>
+                    ))}
+                  </td>
+                  <td>
+                    {att.attendedEmployees.map(ae => (
+                      <div key={ae.employee._id || ae.employee}>
+                        {ae.salary != null ? `${ae.salary} RWF` : 'N/A'}
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {/* Daily Reports Section */}
-      <div className="daily-reports">
-        <h3>Daily Reports for {attendanceDate || 'All Dates'}</h3>
-
-        {filteredReports.length === 0 ? (
-          <p className="no-records">
-            No daily reports found for {attendanceDate || 'any date'}
-            {selectedManagerId && ` under manager ${siteManagers.find(m => m.id === selectedManagerId)?.name || 'Unknown'}`}.
-          </p>
-        ) : (
-          <div className="report-grid">
-            {filteredReports.map((report, idx) => {
-              const manager = siteManagers.find(m => m.id === report.managerId);
-
-              return (
-                <div key={idx} className="report-card">
-                  <h4>{manager?.name || 'Unknown Manager'}</h4>
-                  <p><strong>Time:</strong> {report.time}</p>
-                  <p><strong>Activities:</strong> {report.activities}</p>
-                  <p><strong>Next Day Plan:</strong> {report.nextPlan}</p>
-                  <p><strong>Comments:</strong> {report.comments}</p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </section>
+    </div>
   );
-};
-
-export default Attendance;
+}

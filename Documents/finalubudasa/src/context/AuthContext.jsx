@@ -1,15 +1,11 @@
-// src/context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
+import api from '../api/axios'; // Adjust this path to your axios instance location
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const token = localStorage.getItem('token');
-    return token ? parseJwt(token) : null;
-  });
-
+  // Helper to parse JWT token payload
   const parseJwt = (token) => {
     try {
       const base64Url = token.split('.')[1];
@@ -26,6 +22,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const [user, setUser] = useState(() => {
+    const token = localStorage.getItem('token');
+    return token ? parseJwt(token) : null;
+  });
+
   const login = async ({ phone, password }) => {
     const res = await fetch('http://localhost:5000/api/users/login', {
       method: 'POST',
@@ -34,17 +35,25 @@ export const AuthProvider = ({ children }) => {
     });
 
     const data = await res.json();
-    if (!res.ok || !data.token) throw new Error(data.message || 'Login failed');
+
+    if (!res.ok || !data.token) {
+      throw new Error(data.error || data.message || 'Login failed');
+    }
 
     const decodedUser = parseJwt(data.token);
     localStorage.setItem('token', data.token);
     setUser(decodedUser);
+
+    api.setAuthToken(data.token);  // Set token in axios headers
+
     return decodedUser;
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('token');
+
+    api.removeAuthToken(); // Remove token from axios headers
   };
 
   useEffect(() => {
@@ -52,6 +61,8 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       const decodedUser = parseJwt(token);
       setUser(decodedUser);
+
+      api.setAuthToken(token);  // Set axios token on app load
     }
   }, []);
 

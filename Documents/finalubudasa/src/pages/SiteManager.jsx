@@ -1,115 +1,82 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { registerSiteManager } from '../api/SiteManagerAPI'; // Adjust path if needed
 import './siteManager.css';
-import { useAuth } from '../context/AuthContext'; // Adjust path if needed
-import { useNavigate } from 'react-router-dom';
 
-export default function SiteManagerPage() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+const AddSiteManager = () => {
+  const [form, setForm] = useState({
+    name: '',
+    phone: '',
+    password: '',
+    site: '',
+  });
 
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', phone: '' });
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [siteManagers, setSiteManagers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    // If user is not an ADMIN, redirect them away
-    if (user?.role !== 'ADMIN') {
-      navigate('/not-authorized'); // Create this route or redirect to dashboard
-    } else {
-      fetchSiteManagers();
-    }
-  }, [user, navigate]);
-
-  const fetchSiteManagers = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/users?role=SITE_MANAGER', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setSiteManagers(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setForm(prevForm => ({ ...prevForm, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/users/register', {
-        ...formData,
-        role: 'SITE_MANAGER',
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setMessage('Site Manager added!');
-      fetchSiteManagers();
-      setFormData({ name: '', email: '', password: '', phone: '' });
-      setShowForm(false);
-    } catch (error) {
-      setMessage('Error adding site manager');
+      const res = await registerSiteManager(form);
+      setMessage(res.message || 'Site Manager created successfully.');
+      setForm({ name: '', phone: '', password: '', site: '' });
+    } catch (err) {
+      const error = err.response?.data?.error || 'Something went wrong.';
+      setMessage(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredManagers = siteManagers.filter(m =>
-    m.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
-    <div className="site-manager-container">
-      <h2>Manage Site Managers</h2>
-      <div className="header-actions">
+    <div className="add-site-manager-container">
+      <h2>Create Site Manager</h2>
+      {message && <p className="form-message">{message}</p>}
+      <form className="site-manager-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Search site managers..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          name="name"
+          placeholder="Full Name"
+          value={form.name}
+          onChange={handleChange}
+          required
         />
-        <button onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Close Form' : 'Add New Site Manager'}
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone Number"
+          value={form.phone}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="site"
+          placeholder="Site Location"
+          value={form.site}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Creating...' : 'Create Site Manager'}
         </button>
-      </div>
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="site-manager-form">
-          <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} required />
-          <input type="text" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required />
-          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required />
-          <button type="submit">Submit</button>
-        </form>
-      )}
-
-      {message && <p className="message">{message}</p>}
-
-      <table className="site-manager-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredManagers.map(manager => (
-            <tr key={manager._id}>
-              <td>{manager.name}</td>
-              <td>{manager.email}</td>
-              <td>
-                <button>Edit</button>
-                <button className="delete">Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </form>
     </div>
   );
-}
+};
+
+export default AddSiteManager;
