@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './header.css';
 import {
   FaBars,
@@ -12,18 +12,39 @@ import {
   FaMoneyBill,
   FaRegFileAlt,
   FaTachometerAlt,
-  FaUserShield
+  FaUserShield,
+  FaBuilding
 } from 'react-icons/fa';
+
+import api from '../../api/axios';   // Your axios instance
+import { useAuth } from '../../context/AuthContext'; // Adjust path to your context
 
 const Header = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const { logout } = useAuth();  // Get logout from context
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleDrawer = () => setDrawerOpen(!drawerOpen);
 
-  const handleLogout = () => {
-    console.log('User logged out');
+  const handleLogout = async () => {
+    try {
+      // Call your API logout endpoint (adjust URL if needed)
+      await api.post('/users/logout'); 
+
+      // Clear auth data and update context
+      logout();
+
+      // Redirect to login page
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Still force logout client side in case of error
+      logout();
+      navigate('/login');
+    }
   };
 
   return (
@@ -46,12 +67,13 @@ const Header = () => {
           <ul className="dropdown">
             <li><FaCog /> Settings</li>
             <li><FaPaintBrush /> Customize</li>
-            <li onClick={handleLogout}><FaSignOutAlt /> Logout</li>
+            <li onClick={handleLogout} style={{ cursor: 'pointer' }}>
+              <FaSignOutAlt /> Logout
+            </li>
           </ul>
         )}
       </div>
 
-      {/* Mobile Drawer */}
       {drawerOpen && (
         <div className="mobile-drawer">
           <button className="close-drawer" onClick={toggleDrawer}>
@@ -63,6 +85,7 @@ const Header = () => {
             <Link to="/attendance" onClick={toggleDrawer}><FaClipboardList /> <span>Attendance</span></Link>
             <Link to="/payroll" onClick={toggleDrawer}><FaMoneyBill /> <span>Payroll</span></Link>
             <Link to="/daily-report" onClick={toggleDrawer}><FaRegFileAlt /> <span>Daily Report</span></Link>
+            <Link to="/sites" onClick={toggleDrawer}><FaBuilding /> <span>Sites</span></Link>
             <Link to="/site-manager" onClick={toggleDrawer}><FaUserShield /> <span>Site Manager</span></Link>
           </nav>
         </div>

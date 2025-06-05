@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   FaTachometerAlt,
   FaUsers,
@@ -7,16 +7,20 @@ import {
   FaRegFileAlt,
   FaUserShield,
   FaTimes,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaBuilding,
 } from 'react-icons/fa';
 import './sidebar.css';
+import { useAuth } from '../context/AuthContext'; // ✅ Use context
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
   const navigate = useNavigate();
-  const role = localStorage.getItem('role');
+  const { user, logout } = useAuth(); // ✅ Get user and logout from context
+
+  const role = user?.role?.toUpperCase(); // Safely access role
 
   const handleLogout = () => {
-    localStorage.clear();
+    logout(); // ✅ Call context logout
     navigate('/login');
   };
 
@@ -26,6 +30,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     { name: 'Payroll', path: '/admin/payroll', icon: <FaMoneyBill /> },
     { name: 'Site Managers', path: '/admin/site-managers', icon: <FaUserShield /> },
     { name: 'Reports', path: '/admin/reports', icon: <FaRegFileAlt /> },
+    { name: 'Sites', path: '/admin/sites', icon: <FaBuilding /> },
   ];
 
   const siteManagerMenu = [
@@ -33,26 +38,51 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     { name: 'Reports', path: '/site-manager/reports', icon: <FaRegFileAlt /> },
   ];
 
-  const menuItems = role === 'ADMIN' ? adminMenu : siteManagerMenu;
+  const menuItems =
+    role === 'ADMIN'
+      ? adminMenu
+      : role === 'SITE_MANAGER'
+      ? siteManagerMenu
+      : [];
+
+  console.log('Sidebar Render - Role:', role);
+  console.log('Sidebar Render - Menu Items:', menuItems);
 
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header">
-        <button className="close-btn" onClick={closeSidebar}><FaTimes /></button>
+        <span className="sidebar-role">{role || 'GUEST'}</span>
+        <button
+          className="close-btn"
+          onClick={closeSidebar}
+          aria-label="Close sidebar"
+        >
+          <FaTimes />
+        </button>
       </div>
+
       <nav className="sidebar-nav">
         <ul>
-          {menuItems.map((item) => (
-            <li key={item.name}>
-              <Link to={item.path} onClick={closeSidebar}>
-                {item.icon} <span>{item.name}</span>
-              </Link>
+          {menuItems.map(({ name, path, icon }) => (
+            <li key={name}>
+              <NavLink
+                to={path}
+                onClick={closeSidebar}
+                className={({ isActive }) => (isActive ? 'active-link' : '')}
+              >
+                {icon} <span>{name}</span>
+              </NavLink>
             </li>
           ))}
         </ul>
       </nav>
+
       <div className="sidebar-footer">
-        <button className="logout-btn" onClick={handleLogout}>
+        <button
+          className="logout-btn"
+          onClick={handleLogout}
+          aria-label="Logout"
+        >
           <FaSignOutAlt /> <span>Logout</span>
         </button>
       </div>

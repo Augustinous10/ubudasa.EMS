@@ -20,3 +20,19 @@ export const registerSiteManager = async (formData) => {
   
   return response.data;
 };
+
+// New function to fetch all site managers
+export const fetchSiteManagers = async () => {
+  const token = localStorage.getItem('token');
+
+  const response = await axios.get(
+    `${API_BASE_URL}/admin/site-managers`, // Adjust this endpoint if needed
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};

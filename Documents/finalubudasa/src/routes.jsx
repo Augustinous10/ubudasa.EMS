@@ -14,6 +14,7 @@ import DailyReport from './pages/DailyReport';
 import SiteManager from './pages/SiteManager';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import SiteManagerDashboard from './pages/siteManager/SiteManagerDashboard';
+import RegisterSite from './pages/RegisterSite';  // <-- updated import here
 import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized';
 
@@ -56,12 +57,24 @@ const AppRoutes = ({ onMarkAttendance }) => {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/payroll" element={<Payroll />} />
         <Route path="/daily-report" element={<DailyReport />} />
-        
+        <Route path="/site" element={<RegisterSite />} />
+
+        {/* SiteManager page protected */}
         <Route
           path="/site-manager"
           element={
             <ProtectedRoute allowedRoles={['ADMIN', 'SITE_MANAGER']}>
               <SiteManager />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* New Admin-only RegisterSite Route */}
+        <Route
+          path="/admin/sites"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <RegisterSite />
             </ProtectedRoute>
           }
         />

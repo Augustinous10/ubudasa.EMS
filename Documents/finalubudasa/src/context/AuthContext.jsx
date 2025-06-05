@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
       );
       return JSON.parse(jsonPayload);
     } catch (e) {
+      console.error('Failed to parse JWT:', e);
       return null;
     }
   };
@@ -28,25 +29,30 @@ export const AuthProvider = ({ children }) => {
   });
 
   const login = async ({ phone, password }) => {
-    const res = await fetch('http://localhost:5000/api/users/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, password }),
-    });
+    try {
+      const res = await fetch('http://localhost:5000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok || !data.token) {
-      throw new Error(data.error || data.message || 'Login failed');
+      if (!res.ok || !data.token) {
+        throw new Error(data.error || data.message || 'Login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      const decodedUser = parseJwt(data.token);
+      setUser(decodedUser);
+
+      api.setAuthToken(data.token);  // Set token in axios headers
+
+      return decodedUser;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
-
-    const decodedUser = parseJwt(data.token);
-    localStorage.setItem('token', data.token);
-    setUser(decodedUser);
-
-    api.setAuthToken(data.token);  // Set token in axios headers
-
-    return decodedUser;
   };
 
   const logout = () => {

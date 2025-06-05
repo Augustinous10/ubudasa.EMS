@@ -1,175 +1,381 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { usePayroll } from '../context/PayrollContext';
-import { useAttendance } from '../context/AttendanceContext';
+import React, { useEffect, useState, useCallback } from 'react';
+import payrollApi from '../api/payrollApi';
+import { fetchSiteManagers } from '../api/SiteManagerAPI';
 import './payroll.css';
 
-const Payroll = () => {
-  const { payrolls: paymentHistory = [] } = usePayroll() || {};
-  const { attendanceRecords = [] } = useAttendance() || {};
+const ITEMS_PER_PAGE = 5;
 
-  const [payrollData, setPayrollData] = useState([]);
-  const [totalAmountToPay, setTotalAmountToPay] = useState(0);
-  const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
+const PayrollDashboard = () => {
+  const [unpaidEmployees, setUnpaidEmployees] = useState([]);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [selectedPayments, setSelectedPayments] = useState([]);
+  const [siteManagers, setSiteManagers] = useState([]);
+
+  const [filters, setFilters] = useState({
+    siteManagerId: '',
+    startDate: '',
+    endDate: '',
   });
 
-  const dailyRate = 10000;
-
-  const generatePayroll = useCallback(() => {
-    const startDate = new Date(selectedDateRange.startDate);
-    const endDate = new Date(selectedDateRange.endDate);
-
-    const filteredAttendance = attendanceRecords.filter((record) => {
-      const date = new Date(record.date);
-      return date >= startDate && date <= endDate;
-    });
-
-    const attendanceMap = {};
-
-    filteredAttendance.forEach((record) => {
-      if (!attendanceMap[record.employeeId]) {
-        attendanceMap[record.employeeId] = {
-          employeeName: record.employeeName,
-          daysWorked: 0,
-        };
-      }
-      attendanceMap[record.employeeId].daysWorked += 1;
-    });
-
-    const payroll = Object.entries(attendanceMap).map(([employeeId, data]) => {
-      const regularPay = data.daysWorked * dailyRate;
-      return {
-        id: employeeId,
-        name: data.employeeName,
-        daysWorked: data.daysWorked,
-        extraDaysWorked: 0,
-        regularPay,
-        extraPay: 0,
-        totalPay: regularPay,
-      };
-    });
-
-    setPayrollData(payroll);
-    const total = payroll.reduce((sum, record) => sum + record.totalPay, 0);
-    setTotalAmountToPay(total);
-  }, [attendanceRecords, selectedDateRange]);
-
-  const handleDateRangeChange = (e) => {
-    setSelectedDateRange({
-      ...selectedDateRange,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const filteredPayments = paymentHistory.filter((payment) => {
-    const paymentDate = new Date(payment.date);
-    const startDate = new Date(selectedDateRange.startDate);
-    const endDate = new Date(selectedDateRange.endDate);
-    return paymentDate >= startDate && paymentDate <= endDate;
-  });
+  const [unpaidPage, setUnpaidPage] = useState(1);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [loadingUnpaid, setLoadingUnpaid] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
-    generatePayroll();
-  }, [generatePayroll]);
+    const loadManagers = async () => {
+      try {
+        const response = await fetchSiteManagers();
+        if (Array.isArray(response)) setSiteManagers(response);
+        else if (response?.siteManagers) setSiteManagers(response.siteManagers);
+        else setSiteManagers([]);
+      } catch (err) {
+        console.error('Error loading site managers:', err);
+        setSiteManagers([]);
+      }
+    };
+    loadManagers();
+  }, []);
+
+  const isValidDate = (dateStr) => !isNaN(new Date(dateStr).getTime());
+
+  const fetchUnpaid = useCallback(async () => {
+    if (
+      !filters.siteManagerId ||
+      !filters.startDate ||
+      !filters.endDate ||
+      !isValidDate(filters.startDate) ||
+      !isValidDate(filters.endDate)
+    ) {
+      setUnpaidEmployees([]);
+      return;
+    }
+    setLoadingUnpaid(true);
+    try {
+      const response = await payrollApi.fetchUnpaid(filters);
+      setUnpaidEmployees(response || []);
+    } catch (err) {
+      console.error('Error fetching unpaid employees:', err);
+      setUnpaidEmployees([]);
+    } finally {
+      setLoadingUnpaid(false);
+    }
+  }, [filters]);
+
+  const fetchHistory = useCallback(async () => {
+    if (
+      !filters.siteManagerId ||
+      !filters.startDate ||
+      !filters.endDate ||
+      !isValidDate(filters.startDate) ||
+      !isValidDate(filters.endDate)
+    ) {
+      setPaymentHistory([]);
+      return;
+    }
+    setLoadingHistory(true);
+    try {
+      const response = await payrollApi.fetchHistory(filters);
+
+      // Debug log to check for duplicates:
+      console.log('Fetched payment history:', response);
+
+      setPaymentHistory(response || []);
+    } catch (err) {
+      console.error('Error fetching payment history:', err);
+      setPaymentHistory([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, [filters]);
+
+  // Reset pagination and selections when filters change
+  useEffect(() => {
+    setUnpaidPage(1);
+    setHistoryPage(1);
+    setSelectedPayments([]);
+  }, [filters]);
+
+  // Selection logic remains same
+  const isGroupSelected = (group) =>
+    group.dates.every((date) =>
+      selectedPayments.some(
+        (p) => p.employeeId === group.employee._id && p.date === date
+      )
+    );
+
+  const togglePaymentSelection = (group) => {
+    if (isGroupSelected(group)) {
+      setSelectedPayments((prev) =>
+        prev.filter((p) => p.employeeId !== group.employee._id)
+      );
+    } else {
+      const newPayments = group.dates.map((date) => ({
+        employeeId: group.employee._id,
+        siteManager: filters.siteManagerId,
+        date,
+        amount: group.dailySalary,
+      }));
+      setSelectedPayments((prev) => [...prev, ...newPayments]);
+    }
+  };
+
+  const markSelectedAsPaid = async () => {
+    if (!selectedPayments.length) return alert('No payments selected');
+    try {
+      await payrollApi.markAsPaid(selectedPayments);
+      alert('Payments marked as paid.');
+      setSelectedPayments([]);
+      fetchUnpaid();
+      fetchHistory();
+    } catch (err) {
+      console.error('Error marking selected payments as paid:', err);
+      alert('Failed to mark selected payments as paid.');
+    }
+  };
+
+  const markGroupAsPaid = async (group) => {
+    const payments = group.dates.map((date) => ({
+      employeeId: group.employee._id,
+      siteManager: filters.siteManagerId,
+      date,
+      amount: group.dailySalary,
+    }));
+    try {
+      await payrollApi.markAsPaid(payments);
+      alert(`${group.employee.name}'s payment marked as paid.`);
+      fetchUnpaid();
+      fetchHistory();
+      setSelectedPayments((prev) =>
+        prev.filter((p) => p.employeeId !== group.employee._id)
+      );
+    } catch (err) {
+      console.error('Error marking group payment:', err);
+      alert('Failed to mark group as paid.');
+    }
+  };
+
+  const totalSelectedAmount = selectedPayments.reduce(
+    (sum, p) => sum + (p.amount || 0),
+    0
+  );
+
+  // Frontend pagination slices data only - no fetch on page change
+  const paginatedUnpaid = unpaidEmployees.slice(
+    (unpaidPage - 1) * ITEMS_PER_PAGE,
+    unpaidPage * ITEMS_PER_PAGE
+  );
+  const unpaidTotalPages = Math.ceil(unpaidEmployees.length / ITEMS_PER_PAGE);
+
+  const paginatedHistory = paymentHistory.slice(
+    (historyPage - 1) * ITEMS_PER_PAGE,
+    historyPage * ITEMS_PER_PAGE
+  );
+  const historyTotalPages = Math.ceil(paymentHistory.length / ITEMS_PER_PAGE);
 
   return (
-    <div className="payroll-container">
-      <h2>Employee Payroll</h2>
+    <div className="payroll-dashboard">
+      <h1>Payroll Dashboard</h1>
 
-      <div className="date-range">
-        <div className="date-input">
-          <label htmlFor="startDate">Start Date</label>
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            value={selectedDateRange.startDate}
-            onChange={handleDateRangeChange}
-          />
-        </div>
-        <div className="date-input">
-          <label htmlFor="endDate">End Date</label>
-          <input
-            type="date"
-            id="endDate"
-            name="endDate"
-            value={selectedDateRange.endDate}
-            onChange={handleDateRangeChange}
-          />
-        </div>
+      <div className="filter-form">
+        <select
+          value={filters.siteManagerId}
+          onChange={(e) =>
+            setFilters({ ...filters, siteManagerId: e.target.value })
+          }
+        >
+          <option value="">Select Site Manager</option>
+          {siteManagers.map((sm) => (
+            <option key={sm._id} value={sm._id}>
+              {sm.name} ({sm.email})
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="date"
+          value={filters.startDate}
+          onChange={(e) =>
+            setFilters({ ...filters, startDate: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          value={filters.endDate}
+          onChange={(e) =>
+            setFilters({ ...filters, endDate: e.target.value })
+          }
+        />
+        <button
+          className="btn fetch"
+          onClick={() => {
+            fetchUnpaid();
+            fetchHistory();
+          }}
+          disabled={
+            !filters.siteManagerId ||
+            !filters.startDate ||
+            !filters.endDate ||
+            !isValidDate(filters.startDate) ||
+            !isValidDate(filters.endDate)
+          }
+        >
+          Fetch Data
+        </button>
       </div>
 
-      <div className="table-wrapper">
-        <h3>Payroll Details</h3>
-        <div className="table-scroll">
-          <table className="responsive-table">
-            <thead>
-              <tr>
-                <th>Employee Name</th>
-                <th>Days Worked</th>
-                <th>Extra Days</th>
-                <th>Regular Pay</th>
-                <th>Extra Pay</th>
-                <th>Total Pay</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payrollData.length === 0 ? (
+      <section className="unpaid-section">
+        <h2>Unpaid Employees</h2>
+
+        {loadingUnpaid ? (
+          <p>Loading unpaid data...</p>
+        ) : !filters.siteManagerId || !filters.startDate || !filters.endDate ? (
+          <p>Please select site manager and date range to view unpaid data.</p>
+        ) : paginatedUnpaid.length === 0 ? (
+          <p>No unpaid records found for selected filters.</p>
+        ) : (
+          <div className="table-responsive">
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="6">No payroll data available.</td>
+                  <th>Select</th>
+                  <th>Name</th>
+                  <th>Days Attended</th>
+                  <th>Daily Salary</th>
+                  <th>Total Amount</th>
+                  <th>Unpaid Dates</th>
+                  <th>Action</th>
                 </tr>
-              ) : (
-                payrollData.map((record) => (
-                  <tr key={record.id}>
-                    <td>{record.name}</td>
-                    <td>{record.daysWorked}</td>
-                    <td>{record.extraDaysWorked}</td>
-                    <td>{record.regularPay}</td>
-                    <td>{record.extraPay}</td>
-                    <td>{record.totalPay}</td>
+              </thead>
+              <tbody>
+                {paginatedUnpaid.map((group) => (
+                  <tr key={group.employee._id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isGroupSelected(group)}
+                        onChange={() => togglePaymentSelection(group)}
+                      />
+                    </td>
+                    <td>{group.employee.name}</td>
+                    <td>{group.daysAttended}</td>
+                    <td>{group.dailySalary?.toFixed(2) ?? '-'}</td>
+                    <td>{group.totalAmount?.toFixed(2) ?? '-'}</td>
+                    <td>
+                      {group.dates
+                        .map((date) => new Date(date).toLocaleDateString())
+                        .join(', ')}
+                    </td>
+                    <td>
+                      <button
+                        className="btn pay"
+                        onClick={() => markGroupAsPaid(group)}
+                      >
+                        Pay All
+                      </button>
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="total-pay">
-          <p>Total Amount to Pay: <strong>{totalAmountToPay} RWF</strong></p>
-        </div>
-      </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      <div className="table-wrapper">
-        <h3>Payment History</h3>
-        <div className="table-scroll">
-          <table className="responsive-table">
-            <thead>
-              <tr>
-                <th>Employee Name</th>
-                <th>Amount Paid</th>
-                <th>Payment Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredPayments.length === 0 ? (
+        {unpaidTotalPages > 1 && (
+          <div className="pagination">
+            <button
+              disabled={unpaidPage === 1}
+              onClick={() => setUnpaidPage(unpaidPage - 1)}
+            >
+              Previous
+            </button>
+            <span>
+              Page {unpaidPage} of {unpaidTotalPages}
+            </span>
+            <button
+              disabled={unpaidPage === unpaidTotalPages}
+              onClick={() => setUnpaidPage(unpaidPage + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        <button
+          className="btn mark"
+          onClick={markSelectedAsPaid}
+          disabled={!selectedPayments.length}
+        >
+          Mark Selected as Paid
+        </button>
+
+        {selectedPayments.length > 0 && (
+          <div className="total-amount">
+            Total to pay selected: {totalSelectedAmount.toFixed(2)}
+          </div>
+        )}
+      </section>
+
+      <section className="history-section">
+        <h2>Payment History</h2>
+        {loadingHistory ? (
+          <p>Loading payment history...</p>
+        ) : paymentHistory.length === 0 ? (
+          <p>No payment history available.</p>
+        ) : (
+          <div className="table-responsive">
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="3">No payments made during this period.</td>
+                  <th>Name</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Paid At</th>
                 </tr>
-              ) : (
-                filteredPayments.map((payment) => (
-                  <tr key={payment.id}>
-                    <td>{payment.employeeName}</td>
-                    <td>{payment.amount}</td>
-                    <td>{payment.date}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {paginatedHistory.map((record) => {
+                  // Generate a unique key if _id is missing
+                  const uniqueKey = record._id
+                    ? record._id
+                    : `${record.employee?._id ?? 'unknown'}-${record.date}-${record.salary}-${record.paidAt}`;
+
+                  return (
+                    <tr key={uniqueKey}>
+                      <td>{record.employee?.name ?? 'Unknown'}</td>
+                      <td>{record.date ? new Date(record.date).toLocaleDateString() : 'N/A'}</td>
+                      <td>{record.totalAmount?.toFixed?.(2) ?? record.salary ?? 'N/A'}</td>
+                      <td>{record.paidAt ? new Date(record.paidAt).toLocaleString() : 'N/A'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {historyTotalPages > 1 && (
+          <div className="pagination">
+            <button
+              disabled={historyPage === 1}
+              onClick={() => setHistoryPage(historyPage - 1)}
+            >
+              Previous
+            </button>
+            <span>
+              Page {historyPage} of {historyTotalPages}
+            </span>
+            <button
+              disabled={historyPage === historyTotalPages}
+              onClick={() => setHistoryPage(historyPage + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </section>
     </div>
   );
 };
 
-export default Payroll;
+export default PayrollDashboard;
