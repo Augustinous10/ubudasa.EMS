@@ -1,0 +1,122 @@
+/* AdminDashboard.css */
+
+.admin-dashboard {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.dashboard-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.dashboard-filters label {
+  font-size: 16px;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.dashboard-date-input {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #dcdde1;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.dashboard-date-input:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2);
+}
+
+.dashboard-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/* Card color themes */
+.card-blue {
+  background-color: #3366ff;
+  color: white;
+}
+
+.card-green {
+  background-color: #00b894;
+  color: white;
+}
+
+.card-orange {
+  background-color: #e17055;
+  color: white;
+}
+
+.card-purple {
+  background-color: #9b59b6;
+  color: white;
+}
+
+.card-yellow {
+  background-color: #f39c12;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 16px;
+  }
+
+  .dashboard-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-filters {
+    gap: 8px;
+  }
+
+  .dashboard-filters label {
+    font-size: 14px;
+  }
+
+  .dashboard-date-input {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .dashboard-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-title {
+    font-size: 20px;
+  }
+
+  .dashboard-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .dashboard-date-input {
+    width: 100%;
+  }
+}

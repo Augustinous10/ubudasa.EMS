@@ -1,97 +1,277 @@
 /* RegisterSite.css */
-.container {
-  max-width: 400px;
+
+:root {
+  --primary-color: #4f46e5; /* Indigo */
+  --primary-hover: #4338ca;
+  --success-color: #16a34a; /* Green */
+  --error-color: #dc2626; /* Red */
+  --bg-color: #f9fafb;
+  --text-color: #111827;
+  --muted-text: #6b7280;
+  --border-color: #e5e7eb;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.site-page {
+  max-width: 900px;
   margin: 2rem auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 1rem 1.5rem;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  box-shadow: 0 6px 15px rgb(0 0 0 / 0.1);
+  font-family: var(--font-family);
+  color: var(--text-color);
 }
 
 h2 {
+  text-align: center;
   margin-bottom: 1.5rem;
   font-weight: 700;
-  color: #333;
-  text-align: center;
+  font-size: 2rem;
 }
 
-label {
+.add-site-btn {
   display: block;
-  margin-bottom: 0.5rem;
+  margin: 0 auto 1.5rem auto;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
   font-weight: 600;
-  color: #555;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgb(79 70 229 / 0.4);
 }
 
-input[type="text"],
-textarea {
+.add-site-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.site-form {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.07);
+  margin-bottom: 2rem;
+}
+
+.site-form div {
+  margin-bottom: 1rem;
+}
+
+.site-form label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--text-color);
+}
+
+.required {
+  color: var(--error-color);
+  margin-left: 0.25rem;
+}
+
+.site-form input[type='text'],
+.site-form textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid #ccc;
-  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
   font-size: 1rem;
+  border: 1.8px solid var(--border-color);
+  border-radius: 6px;
   transition: border-color 0.3s ease;
-  box-sizing: border-box;
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: #fff;
   resize: vertical;
 }
 
-input[type="text"]:focus,
-textarea:focus {
-  border-color: #007bff;
+.site-form input[type='text']:focus,
+.site-form textarea:focus {
   outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 6px var(--primary-color);
 }
 
-button {
-  width: 100%;
-  padding: 12px 0;
-  margin-top: 1rem;
-  background-color: #007bff;
+.submit-btn {
+  background-color: var(--primary-color);
   color: white;
-  font-size: 1.1rem;
-  font-weight: 700;
   border: none;
-  border-radius: 6px;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%;
+  max-width: 200px;
+  margin-top: 0.5rem;
+  display: block;
+  box-shadow: 0 5px 10px rgb(79 70 229 / 0.4);
 }
 
-button:disabled {
-  background-color: #6c757d;
+.submit-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-.message {
-  margin-top: 1rem;
-  font-weight: 600;
+.success-msg,
+.error-msg {
   text-align: center;
+  margin: 1rem 0;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
 }
 
-.message.success {
-  color: green;
+.success-msg {
+  color: var(--success-color);
+  background-color: #dcfce7;
+  border: 1px solid var(--success-color);
 }
 
-.message.error {
-  color: red;
+.error-msg {
+  color: var(--error-color);
+  background-color: #fee2e2;
+  border: 1px solid var(--error-color);
+}
+
+.site-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.05);
+}
+
+.site-table th,
+.site-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.site-table thead {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.site-table tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+.site-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.site-table button {
+  background-color: transparent;
+  border: 1.5px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 0.3rem 0.8rem;
+  margin-right: 0.3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.site-table button:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.site-table button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mark as Finished button in green */
+.site-table button:nth-last-child(1) {
+  border-color: #059669; /* green-600 */
+  color: #059669;
+}
+
+.site-table button:nth-last-child(1):hover:not(:disabled) {
+  background-color: #059669;
+  color: white;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pagination button {
+  background-color: var(--primary-color);
+  border: none;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgb(79 70 229 / 0.4);
+}
+
+.pagination button:disabled {
+  background-color: var(--border-color);
+  color: var(--muted-text);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.pagination span {
+  font-weight: 600;
+  color: var(--muted-text);
+  font-size: 1rem;
 }
 
 /* Responsive */
-@media (max-width: 480px) {
-  .container {
-    margin: 1rem;
-    padding: 15px;
+@media (max-width: 640px) {
+  .site-page {
+    padding: 1rem;
   }
 
-  h2 {
-    font-size: 1.4rem;
+  .site-table th,
+  .site-table td {
+    font-size: 0.8rem;
+    padding: 0.5rem;
   }
 
-  button {
-    font-size: 1rem;
-    padding: 10px 0;
+  .site-form {
+    padding: 1rem;
+  }
+
+  .submit-btn,
+  .add-site-btn,
+  .pagination button {
+    width: 100%;
+    max-width: none;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

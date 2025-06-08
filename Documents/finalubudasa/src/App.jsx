@@ -8,7 +8,8 @@ import { EmployeeProvider } from './context/EmployeeContext';
 import { AttendanceProvider } from './context/AttendanceContext';
 import { PayrollProvider } from './context/PayrollContext';
 import { DailyReportProvider } from './context/DailyReportContext';
-import { SiteManagerProvider } from './context/SiteManagerContext'; // ✅ Site Manager Context
+import { SiteManagerProvider } from './context/SiteManagerContext';
+import { SiteProvider } from './context/SiteContext';  // <-- import SiteProvider here
 
 import './styles/global.css';
 
@@ -20,8 +21,10 @@ function App() {
           <AttendanceProvider>
             <PayrollProvider>
               <DailyReportProvider>
-                <SiteManagerProvider> {/* ✅ Wrap AppRoutes with SiteManagerProvider */}
-                  <AppRoutes />
+                <SiteManagerProvider>
+                  <SiteProvider> {/* <-- Wrap here */}
+                    <AppRoutes />
+                  </SiteProvider>
                 </SiteManagerProvider>
               </DailyReportProvider>
             </PayrollProvider>

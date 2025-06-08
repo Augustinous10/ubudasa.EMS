@@ -1,63 +1,175 @@
+/* ====== CONTAINER STYLES ====== */
 .add-site-manager-container {
-  max-width: 500px;
+  max-width: 1000px;
   margin: 40px auto;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9fb;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
-.add-site-manager-container h2 {
-  margin-bottom: 1.5rem;
+h2, h3 {
   text-align: center;
-  font-size: 1.8rem;
   color: #333;
+  margin-bottom: 20px;
 }
 
-.site-manager-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.site-manager-form input {
-  padding: 0.8rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.site-manager-form button {
-  padding: 0.9rem 1rem;
-  background-color: #007bff;
+/* ====== BUTTONS ====== */
+.toggle-form-btn,
+.site-manager-form button,
+.pagination button,
+.action-buttons button {
+  background-color: #0066ff;
   color: white;
+  padding: 10px 18px;
+  font-size: 14px;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: 0.3s;
 }
 
-.site-manager-form button:disabled {
-  background-color: #6c757d;
+.toggle-form-btn:hover,
+.site-manager-form button:hover,
+.pagination button:hover,
+.action-buttons button:hover {
+  background-color: #004ccf;
+}
+
+.toggle-form-btn:disabled,
+.site-manager-form button:disabled,
+.pagination button:disabled,
+.action-buttons button:disabled {
+  background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.form-message {
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #d9534f;
+/* ====== FORM STYLING ====== */
+.site-manager-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Mobile Responsive */
-@media (max-width: 600px) {
-  .add-site-manager-container {
-    margin: 20px;
-    padding: 1.5rem;
+.site-manager-form input,
+.site-manager-form select {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.site-manager-form select:invalid {
+  color: #999;
+}
+
+.input-error-border {
+  border-color: red;
+}
+
+.input-error {
+  color: red;
+  font-size: 13px;
+  margin-top: -8px;
+  margin-bottom: 5px;
+}
+
+/* ====== SUCCESS & ERROR MESSAGES ====== */
+.form-message {
+  background-color: #e0ffe0;
+  color: #0b7300;
+  padding: 10px 15px;
+  border: 1px solid #8fdd8f;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-weight: 500;
+}
+
+/* ====== TABLE STYLING ====== */
+.table-scroll-container {
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.site-managers-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.site-managers-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f4f6fa;
+  z-index: 10;
+  padding: 12px;
+  font-weight: bold;
+  color: #0b0101;
+  border-bottom: 2px solid #ccc;
+}
+
+.site-managers-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+.site-managers-table tbody tr:hover {
+  background-color: #f0f4ff;
+}
+
+.site-managers-table td:last-child {
+  text-align: center;
+}
+
+/* ====== ACTION BUTTONS ====== */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ====== PAGINATION ====== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.pagination span {
+  font-weight: 500;
+  color: #333;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .site-manager-form input,
+  .site-manager-form select {
+    max-width: 100%;
   }
 
-  .site-manager-form input,
+  .site-managers-table {
+    font-size: 13px;
+  }
+
+  .toggle-form-btn,
+  .pagination button,
   .site-manager-form button {
-    font-size: 0.95rem;
+    font-size: 13px;
+    padding: 8px 12px;
   }
 }

@@ -1,58 +1,142 @@
-const API_URL = 'http://localhost:5000/api/sites';
+import axios from 'axios';
 
-async function handleResponse(res) {
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.error || 'API request failed');
+// Base URL points to the backend API root (without /sites)
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+
+// Create axios instance with base URL set to API root
+const api = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+// Attach JWT token to each request if available
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// Helper to return consistent error objects
+const handleError = (error, defaultMessage = 'An error occurred') => ({
+  success: false,
+  error: error.response?.data?.error || defaultMessage,
+});
+
+// Get all sites with pagination
+export const getAllSites = async (page = 1, limit = 10) => {
+  try {
+    const response = await api.get('/sites', { params: { page, limit } });
+    return {
+      success: response.data.success,
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to fetch all sites');
   }
-  return res.json();
-}
+};
 
-// Get all sites
-export async function getAllSites() {
-  const res = await fetch(API_URL);
-  return handleResponse(res);
-}
+// Get available sites only
+export const getAvailableSites = async () => {
+  try {
+    const response = await api.get('/sites/available');
+    return {
+      success: response.data.success,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to fetch available sites');
+  }
+};
 
-// Get site by ID
-export async function getSiteById(id) {
-  const res = await fetch(`${API_URL}/${id}`);
-  return handleResponse(res);
-}
+// Get assignable sites only
+export const getAssignableSites = async () => {
+  try {
+    const response = await api.get('/sites/assignable');
+    return {
+      success: response.data.success,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to fetch assignable sites');
+  }
+};
 
-// Create a new site registration
-export async function createSiteRegistration(data, token) {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,  // Use token here
-    },
-    body: JSON.stringify(data),
-  });
-  return handleResponse(res);
-}
+// Get a single site by ID
+export const getSiteById = async (id) => {
+  try {
+    const response = await api.get(`/sites/${id}`);
+    return {
+      success: response.data.success,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to fetch site details');
+  }
+};
 
-// Update site info by ID
-export async function updateSite(id, data, token) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
-  return handleResponse(res);
-}
+// Create a new site
+export const createSite = async (siteData) => {
+  try {
+    const response = await api.post('/sites', siteData);
+    return {
+      success: response.data.success,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to create site');
+  }
+};
 
-// Delete site by ID
-export async function deleteSite(id, token) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  return handleResponse(res);
-}
+// Update an existing site
+export const updateSite = async (id, siteData) => {
+  try {
+    const response = await api.put(`/sites/${id}`, siteData);
+    return {
+      success: response.data.success,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to update site');
+  }
+};
+
+// Delete a site
+export const deleteSite = async (id) => {
+  try {
+    const response = await api.delete(`/sites/${id}`);
+    return {
+      success: response.data.success,
+      message: response.data.message,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to delete site');
+  }
+};
+
+// Mark a site as finished
+export const markSiteAsFinished = async (id) => {
+  try {
+    const response = await api.put(`/sites/${id}/mark-finished`);
+    return {
+      success: response.data.success,
+      message: response.data.message,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to mark site as finished');
+  }
+};
+
+// Assign a manager to a site
+export const assignManager = async (id, managerId) => {
+  try {
+    const response = await api.post(`/sites/${id}/assign-manager`, { managerId });
+    return {
+      success: response.data.success,
+      message: response.data.message,
+      data: response.data.data,
+    };
+  } catch (error) {
+    return handleError(error, 'Failed to assign manager');
+  }
+};
