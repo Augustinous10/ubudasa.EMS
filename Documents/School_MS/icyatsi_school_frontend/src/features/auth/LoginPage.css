@@ -1,0 +1,278 @@
+/* ---------- Global Layout ---------- */
+.login-page {
+  min-height: 100vh;
+  background-color: #5B7D96;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ---------- Card ---------- */
+.login-card {
+  background: #FEFEFE;
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Header ---------- */
+.login-header {
+  background-color: #5B7D96;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.icon-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.school-icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+.login-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.login-subtitle {
+  font-size: 0.875rem;
+  color: #F0F6F1;
+}
+
+/* ---------- Body ---------- */
+.login-body {
+  padding: 2rem;
+}
+
+/* ---------- Alerts ---------- */
+.alert {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid;
+}
+
+.alert-icon {
+  margin-right: 0.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.alert.success {
+  background-color: #F0F6F1;
+  border-color: #5B7D96;
+  color: #5B7D96;
+}
+
+.alert.error {
+  background-color: #F0F0F0;
+  border-color: #5B7D96;
+  color: #5B7D96;
+}
+
+/* ---------- Inputs ---------- */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #5B7D96;
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-left-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  transform: translateY(-50%);
+  color: #5B7D96;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.input-icon input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  font-size: 1rem;
+  border: 1px solid #5B7D96;
+  border-radius: 0.5rem;
+  background: #FEFEFE;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-icon input:focus {
+  background: #ffffff;
+  border-color: #5B7D96;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(91, 125, 150, 0.3);
+}
+
+/* ---------- Password Toggle ---------- */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #5B7D96;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* ---------- Submit Button ---------- */
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  color: white;
+  background-color: #5B7D96;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 1rem;
+}
+
+.submit-button:hover:not(.loading) {
+  background-color: #4e6b83;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button.loading {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  margin-right: 0.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Footer ---------- */
+.login-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 0.875rem;
+  color: #5B7D96;
+}
+
+.contact-link {
+  background: none;
+  border: none;
+  color: #5B7D96;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.contact-link:hover {
+  color: #4e6b83;
+}
+
+/* ---------- Role Info ---------- */
+.role-info {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #F0F0F0;
+  border-radius: 0.5rem;
+}
+
+.role-info h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #5B7D96;
+  margin-bottom: 0.5rem;
+}
+
+.roles {
+  font-size: 0.75rem;
+  color: #5B7D96;
+}
+
+.role {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  margin-right: 0.5rem;
+  background-color: #5B7D96;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .login-header {
+    padding: 1.5rem;
+  }
+
+  .login-body {
+    padding: 1.5rem;
+  }
+
+  .submit-button {
+    font-size: 0.95rem;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+  }
+
+  .input-icon input {
+    font-size: 0.95rem;
+  }
+
+  .login-title {
+    font-size: 1.25rem;
+  }
+
+  .school-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
