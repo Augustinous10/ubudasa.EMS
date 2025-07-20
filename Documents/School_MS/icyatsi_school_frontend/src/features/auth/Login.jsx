@@ -65,9 +65,11 @@ const LoginPage = () => {
 
       const data = await response.json();
 
-      if (data.success) {
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
+     if (data.success) {
+  const token = data.data.token; // Optional clarity
+ localStorage.setItem('token', token);
+  localStorage.setItem('user', JSON.stringify(data.data.user));
+  console.log('Login successful:', data.data.user);
 
         showAlert('success', 'Login successful! Redirecting...');
 

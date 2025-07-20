@@ -19,32 +19,45 @@ const Sidebar = ({ isOpen, user }) => {
     ];
 
     const roleMenus = {
-      admin: [
-        ...baseItems,
-        { id: 'users', label: 'Users', icon: Users, href: '/users' },
-        { id: 'teachers', label: 'Teachers', icon: GraduationCap, href: '/teachers' },
-        { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
-        { id: 'classes', label: 'Classes', icon: Calendar, href: '/classes' },
-        { id: 'finance', label: 'Finance', icon: DollarSign, href: '/finance' },
-        { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
-      ],
-      head_teacher: [
-        ...baseItems,
-        { id: 'teachers', label: 'Teachers', icon: GraduationCap, href: '/teachers' },
-        { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
-        { id: 'classes', label: 'Classes', icon: Calendar, href: '/classes' },
-      ],
-      accountant: [
-        ...baseItems,
-        { id: 'finance', label: 'Finance', icon: DollarSign, href: '/finance' },
-        { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
-      ],
-      cashier: [
-        ...baseItems,
-        { id: 'payments', label: 'Payments', icon: DollarSign, href: '/payments' },
-        { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
-      ],
-    };
+  admin: [
+    ...baseItems,
+    { id: 'users', label: 'Users', icon: Users, href: '/users' },
+    { id: 'teachers', label: 'Teachers', icon: GraduationCap, href: '/teachers' },
+    { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
+    { id: 'classes', label: 'Classes', icon: Calendar, href: '/classes' },
+    { id: 'finance', label: 'Finance', icon: DollarSign, href: '/finance' },
+    { id: 'termConfig', label: 'Term Config', icon: Calendar, href: '/term-config' },
+    { id: 'employeeManager', label: 'Employee Manager', icon: Users, href: '/employee-manager' },
+    { id: 'advanceRequests', label: 'Advance Requests', icon: DollarSign, href: '/advance-requests' }, // ✅ New
+    { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
+  ],
+  head_teacher: [
+    ...baseItems,
+    { id: 'teachers', label: 'Teachers', icon: GraduationCap, href: '/teachers' },
+    { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
+    { id: 'classes', label: 'Classes', icon: Calendar, href: '/classes' },
+    { id: 'payrolls', label: 'Payroll', icon: DollarSign, href: '/payrolls' },
+    { id: 'termConfig', label: 'Term Config', icon: Calendar, href: '/term-config' },
+    { id: 'incomes', label: 'Incomes', icon: DollarSign, href: '/incomes' },
+    { id: 'advanceRequests', label: 'Advance Requests', icon: DollarSign, href: '/advance-requests' }, // ✅ New
+  ],
+  accountant: [
+    ...baseItems,
+    { id: 'finance', label: 'Finance', icon: DollarSign, href: '/finance' },
+    { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
+    { id: 'payrolls', label: 'Payroll', icon: DollarSign, href: '/payrolls' },
+    { id: 'employeeManager', label: 'Employee Manager', icon: Users, href: '/employee-manager' },
+    { id: 'incomes', label: 'Incomes', icon: DollarSign, href: '/incomes' },
+    { id: 'advanceRequests', label: 'Advance Requests', icon: DollarSign, href: '/advance-requests' }, // ✅ New
+    { id: 'payments', label: 'Payments', icon: DollarSign, href: '/payments' },
+    { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
+  ],
+  cashier: [
+    ...baseItems,
+    { id: 'payments', label: 'Payments', icon: DollarSign, href: '/payments' },
+    { id: 'students', label: 'Students', icon: BookOpen, href: '/students' },
+  ],
+};
 
     return roleMenus[user?.role] || baseItems;
   };

@@ -3,6 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Login from './features/auth/Login';
 import Student from './pages/Students';
+import Payrolls from './pages/Payrolls'; // ✅ NEW payroll page
+import CurrentTerm from './pages/CurrentTerm'; // ✅ Term Config page
+import EmployeeManager from './pages/EmployeeManager'; // ✅ Employee Manager page
+import Income from './pages/Income';
+import Payment from './pages/Payment';
+import AdvanceRequest from './pages/AdvanceRequest'; // ✅ NEW import
 
 import RoleBasedDashboard from './features/RoleBasedDashboard';
 
@@ -11,9 +17,8 @@ import HeadTeacherDashboard from './features/Head_teacher/HeadTeacherDashboard';
 import AccountantDashboard from './features/Accountant/accountantDashboard';
 import CasheirDashboard from './features/Casheir/CasheirDashboard';
 
-import MainLayout from './components/layout/MainLayout'; // 🧠 Make sure this path is correct
+import MainLayout from './components/layout/MainLayout';
 
-// 404 Not Found component
 const NotFound = () => (
   <div style={{
     display: 'flex',
@@ -47,6 +52,12 @@ function App() {
 
           {/* Other pages inside layout */}
           <Route path="/students" element={<Student />} />
+          <Route path="/payrolls" element={<Payrolls />} />
+          <Route path="/term-config" element={<CurrentTerm />} />
+          <Route path="/employee-manager" element={<EmployeeManager />} /> {/* New employee manager */}
+           <Route path="/incomes" element={<Income />} />
+           <Route path="/payments" element={<Payment />} />
+           <Route path="/advance-requests" element={<AdvanceRequest />} />
         </Route>
 
         {/* Catch-all */}
