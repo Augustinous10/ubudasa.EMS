@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Login from './features/auth/Login';
 import Student from './pages/Students';
-import Payrolls from './pages/Payrolls'; // ✅ NEW payroll page
-import CurrentTerm from './pages/CurrentTerm'; // ✅ Term Config page
-import EmployeeManager from './pages/EmployeeManager'; // ✅ Employee Manager page
+import Payrolls from './pages/Payrolls';
+import CurrentTerm from './pages/CurrentTerm';
+import EmployeeManager from './pages/EmployeeManager';
 import Income from './pages/Income';
 import Payment from './pages/Payment';
-import AdvanceRequest from './pages/AdvanceRequest'; // ✅ NEW import
+import AdvanceRequest from './pages/AdvanceRequest';
 
 import RoleBasedDashboard from './features/RoleBasedDashboard';
 
@@ -18,6 +18,9 @@ import AccountantDashboard from './features/Accountant/accountantDashboard';
 import CasheirDashboard from './features/Casheir/CasheirDashboard';
 
 import MainLayout from './components/layout/MainLayout';
+
+import BudgetApp from './pages/Budget';  // <-- Import BudgetApp here
+import Expense from './pages/Expense';
 
 const NotFound = () => (
   <div style={{
@@ -54,10 +57,13 @@ function App() {
           <Route path="/students" element={<Student />} />
           <Route path="/payrolls" element={<Payrolls />} />
           <Route path="/term-config" element={<CurrentTerm />} />
-          <Route path="/employee-manager" element={<EmployeeManager />} /> {/* New employee manager */}
-           <Route path="/incomes" element={<Income />} />
-           <Route path="/payments" element={<Payment />} />
-           <Route path="/advance-requests" element={<AdvanceRequest />} />
+          <Route path="/employee-manager" element={<EmployeeManager />} />
+          <Route path="/incomes" element={<Income />} />
+          <Route path="/payments" element={<Payment />} />
+          <Route path="/advance-requests" element={<AdvanceRequest />} />
+
+       <Route path="/expenses" element={<Expense />} />
+          <Route path="/budgets" element={<BudgetApp />} />
         </Route>
 
         {/* Catch-all */}

@@ -40,6 +40,7 @@ const Sidebar = ({ isOpen, user }) => {
     { id: 'termConfig', label: 'Term Config', icon: Calendar, href: '/term-config' },
     { id: 'incomes', label: 'Incomes', icon: DollarSign, href: '/incomes' },
     { id: 'advanceRequests', label: 'Advance Requests', icon: DollarSign, href: '/advance-requests' }, // ✅ New
+    { id: 'budgets', label: 'Budgets', icon: DollarSign, href: '/budgets' },
   ],
   accountant: [
     ...baseItems,
@@ -51,6 +52,8 @@ const Sidebar = ({ isOpen, user }) => {
     { id: 'advanceRequests', label: 'Advance Requests', icon: DollarSign, href: '/advance-requests' }, // ✅ New
     { id: 'payments', label: 'Payments', icon: DollarSign, href: '/payments' },
     { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
+    { id: 'budgets', label: 'Budgets', icon: DollarSign, href: '/budgets' },
+    { id: 'expenses', label: 'Expenses', icon: DollarSign, href: '/expenses' },
   ],
   cashier: [
     ...baseItems,

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Plus, Edit, Trash2, DollarSign, Eye, RefreshCw, AlertCircle, CheckCircle, X } from 'lucide-react';
 import './Payrolls.css'; // Import the CSS file
@@ -31,12 +32,7 @@ const handleApiResponse = async (response) => {
   
   if (!response.ok) {
     if (response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('accessToken');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('authToken');
-      window.location.href = '/login';
+      // Don't automatically clear tokens and redirect - let component handle it
       throw new Error('Authentication failed. Please login again.');
     }
     
@@ -173,6 +169,7 @@ const EnhancedPayrolls = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
+  const [authError, setAuthError] = useState(false);
   
   // Form and modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -229,95 +226,168 @@ const EnhancedPayrolls = () => {
     setEditingPayroll(null);
   };
 
-  // Helper function to get employee details by ID
+  // Helper function to get employee details by ID - FIXED
   const getEmployeeDetails = useCallback((employeeId) => {
-    const employee = employeesList.find(emp => (emp._id || emp.id) === employeeId);
+    if (!employeeId || !employeesList.length) return {};
+    
+    const employee = employeesList.find(emp => {
+      const empId = emp._id || emp.id;
+      return empId === employeeId || String(empId) === String(employeeId);
+    });
+    
     return employee || {};
   }, [employeesList]);
 
-  // Fetch data functions
+  // Fetch data functions - FIXED with better error handling
   const fetchDropdownData = useCallback(async () => {
     try {
+      console.log('Fetching dropdown data...');
       const [empRes, termsRes] = await Promise.all([
         api.getEmployees(),
         api.getTerms()
       ]);
-      console.log('Employees API response:', empRes);
-      console.log('Terms API response:', termsRes);
       
-      setEmployeesList(empRes.data || []);
-      setTermsList(termsRes.data || []);
+      console.log('Raw Employees API response:', empRes);
+      console.log('Raw Terms API response:', termsRes);
+      
+      // Handle different response formats
+      const employees = empRes?.data || empRes?.employees || empRes || [];
+      const terms = termsRes?.data || termsRes?.terms || termsRes || [];
+      
+      console.log('Processed employees:', employees);
+      console.log('Processed terms:', terms);
+      
+      setEmployeesList(Array.isArray(employees) ? employees : []);
+      setTermsList(Array.isArray(terms) ? terms : []);
+      
+      return { employees, terms };
     } catch (err) {
       console.error('Error fetching dropdown data:', err);
-      showToast('Failed to load dropdown data', 'error');
+      if (err.message.includes('Authentication failed')) {
+        setAuthError(true);
+      }
+      showToast('Failed to load dropdown data: ' + err.message, 'error');
+      throw err;
     }
   }, []);
 
   const fetchPayrolls = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
     try {
+      console.log('Fetching payrolls...');
       const res = await api.getPayrolls();
-      console.log('Payrolls API response:', res);
-      setPayrolls(res.data || []);
-      showToast('Payrolls loaded successfully');
+      console.log('Raw Payrolls API response:', res);
+      
+      // Handle different response formats
+      const payrollData = res?.data || res?.payrolls || res || [];
+      console.log('Processed payrolls:', payrollData);
+      
+      if (Array.isArray(payrollData)) {
+        setPayrolls(payrollData);
+        console.log('Payrolls set to state:', payrollData);
+        showToast('Payrolls loaded successfully');
+      } else {
+        console.error('Payroll data is not an array:', payrollData);
+        setPayrolls([]);
+        showToast('No payroll data found', 'error');
+      }
     } catch (err) {
       console.error('Error fetching payrolls:', err);
-      setError('Failed to fetch payrolls');
-      showToast('Failed to fetch payrolls', 'error');
+      if (err.message.includes('Authentication failed')) {
+        setAuthError(true);
+      } else {
+        setError('Failed to fetch payrolls: ' + err.message);
+        showToast('Failed to fetch payrolls: ' + err.message, 'error');
+      }
+      setPayrolls([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Filter payrolls based on filters
+  // Filter payrolls based on filters - FIXED
   useEffect(() => {
+    console.log('Filtering payrolls...', { payrolls: payrolls.length, filters });
+    
+    if (!Array.isArray(payrolls) || payrolls.length === 0) {
+      setFilteredPayrolls([]);
+      return;
+    }
+
     const filtered = payrolls.filter((p) => {
+      try {
+        // Get employee ID safely
+        let employeeId = p.employee;
+        if (typeof p.employee === 'object' && p.employee) {
+          employeeId = p.employee._id || p.employee.id;
+        }
 
-      const employeeId = typeof p.employee === 'object' ? (p.employee._id || p.employee.id) : p.employee;
-const employeeDetails = getEmployeeDetails(employeeId);
+        const employeeDetails = getEmployeeDetails(employeeId);
+        const empName = `${employeeDetails.firstName || ''} ${employeeDetails.lastName || ''}`.toLowerCase().trim();
+        const empDepartment = employeeDetails.department || p.employee?.department || p.department || '';
+        
+        // Get term ID safely
+        let termId = p.termId;
+        if (typeof p.termId === 'object' && p.termId) {
+          termId = p.termId._id || p.termId.id;
+        }
+        
+        const status = p.status || 'unpaid';
+        const searchTerm = filters.search.trim().toLowerCase();
 
-      const empName = `${employeeDetails.firstName || ''} ${employeeDetails.lastName || ''}`.toLowerCase();
-      const empDepartment = employeeDetails.department || p.employee?.department || p.department || '';
-      const termId = typeof p.termId === 'object' ? p.termId?._id || '' : p.termId || '';
-      const status = p.status || '';
-      const searchTerm = filters.search.trim().toLowerCase();
+        const matchesSearch = !searchTerm || 
+          empName.includes(searchTerm) ||
+          empDepartment.toLowerCase().includes(searchTerm);
 
-      const matchesSearch =
-        !searchTerm ||
-        empName.includes(searchTerm) ||
-        empDepartment.toLowerCase().includes(searchTerm);
+        const matchesEmployee = !filters.employee || String(employeeId) === String(filters.employee);
+        const matchesTerm = !filters.term || String(termId) === String(filters.term);
+        const matchesStatus = !filters.status || status === filters.status;
+        const matchesDepartment = !filters.department ||
+          empDepartment.toLowerCase().includes(filters.department.toLowerCase());
 
-const matchesEmployee = !filters.employee || employeeId === filters.employee;
-      const matchesTerm = !filters.term || termId === filters.term;
-      const matchesStatus = !filters.status || status === filters.status;
-      const matchesDepartment =
-        !filters.department ||
-        empDepartment.toLowerCase().includes(filters.department.toLowerCase());
-
-      return (
-        matchesSearch &&
-        matchesEmployee &&
-        matchesTerm &&
-        matchesStatus &&
-        matchesDepartment
-      );
+        return matchesSearch && matchesEmployee && matchesTerm && matchesStatus && matchesDepartment;
+      } catch (error) {
+        console.error('Error filtering payroll item:', p, error);
+        return false;
+      }
     });
 
+    console.log('Filtered payrolls:', filtered.length);
     setFilteredPayrolls(filtered);
     setCurrentPage(1);
   }, [payrolls, filters, getEmployeeDetails]);
 
-  // Initial data loading
-  useEffect(() => {
-    fetchDropdownData();
-  }, [fetchDropdownData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(() => {
+  console.log('Component mounted, starting data fetch...');
 
-  useEffect(() => {
-    if (employeesList.length > 0) {
-      fetchPayrolls();
+  const initializeData = async () => {
+    try {
+      // First fetch dropdown data
+      await fetchDropdownData();
+      console.log('Dropdown data fetched, now fetching payrolls...');
+    } catch (error) {
+      console.error('Failed to fetch dropdown data:', error);
     }
-  }, [employeesList, fetchPayrolls]);
+  };
+
+  initializeData();
+}, [fetchDropdownData]); // Only run once on mount
+
+  // Debug logging
+  useEffect(() => {
+    console.log('State update:', {
+      payrollsCount: payrolls.length,
+      employeesCount: employeesList.length,
+      termsCount: termsList.length,
+      filteredCount: filteredPayrolls.length,
+      loading,
+      error,
+      authError
+    });
+  }, [payrolls, employeesList, termsList, filteredPayrolls, loading, error, authError]);
 
   // Handle form changes
   const handleInputChange = (e) => {
@@ -405,13 +475,21 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
     }
   };
 
-  // Edit payroll
+  // Edit payroll - FIXED
   const handleEdit = (payroll) => {
-    setFormData({
-      
-      employee: typeof payroll.employee === 'object' ? (payroll.employee._id || payroll.employee.id) : payroll.employee || '',
+    let employeeId = payroll.employee;
+    if (typeof payroll.employee === 'object' && payroll.employee) {
+      employeeId = payroll.employee._id || payroll.employee.id;
+    }
 
-      termId: payroll.termId?._id || payroll.termId || '',
+    let termId = payroll.termId;
+    if (typeof payroll.termId === 'object' && payroll.termId) {
+      termId = payroll.termId._id || payroll.termId.id;
+    }
+
+    setFormData({
+      employee: employeeId || '',
+      termId: termId || '',
       department: payroll.department || '',
       payPeriodStart: payroll.payPeriodStart ? payroll.payPeriodStart.split('T')[0] : '',
       payPeriodEnd: payroll.payPeriodEnd ? payroll.payPeriodEnd.split('T')[0] : '',
@@ -444,9 +522,28 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'RWF'
     }).format(amount || 0);
   };
+
+  // Handle authentication error
+  if (authError) {
+    return (
+      <div className="payroll-container">
+        <div className="error-message">
+          <AlertCircle size={16} />
+          Authentication failed. Please login again.
+          <button 
+            className="btn btn-primary" 
+            onClick={() => window.location.href = '/login'}
+            style={{ marginLeft: '10px' }}
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="payroll-container">
@@ -474,11 +571,23 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
         </button>
       </div>
 
+     
+
       {/* Error Message */}
       {error && (
         <div className="error-message">
           <AlertCircle size={16} />
           {error}
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => {
+              setError(null);
+              fetchPayrolls();
+            }}
+            style={{ marginLeft: '10px' }}
+          >
+            Retry
+          </button>
         </div>
       )}
 
@@ -569,7 +678,9 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
         <div className="filters-actions">
           <button
             className="btn btn-secondary"
-            onClick={fetchPayrolls}
+            onClick={() => {
+              fetchDropdownData().then(() => fetchPayrolls());
+            }}
             disabled={loading}
           >
             <RefreshCw size={16} />
@@ -615,14 +726,17 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
               ) : paginatedPayrolls.length === 0 ? (
                 <tr>
                   <td colSpan="9" className="no-data-cell">
-                    No payrolls found
+                    {payrolls.length === 0 ? 'No payrolls found' : 'No payrolls match your filters'}
                   </td>
                 </tr>
               ) : (
                 paginatedPayrolls.map((payroll) => {
-                  const employeeDetails = getEmployeeDetails(payroll.employee?._id || payroll.employee?.id);
+                  const employeeId = typeof payroll.employee === 'object' ? 
+                    (payroll.employee?._id || payroll.employee?.id) : payroll.employee;
+                  const employeeDetails = getEmployeeDetails(employeeId);
+                  
                   return (
-                    <tr key={payroll._id}>
+                    <tr key={payroll._id || payroll.id}>
                       <td>
                         {`${employeeDetails.firstName || ''} ${employeeDetails.lastName || ''}`.trim() || 'N/A'}
                       </td>
@@ -633,7 +747,7 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
                       <td>{formatCurrency(payroll.deductions)}</td>
                       <td>{formatCurrency(payroll.netPay)}</td>
                       <td>
-                        <span className={`status-badge status-${payroll.status}`}>
+                        <span className={`status-badge status-${payroll.status || 'unpaid'}`}>
                           {payroll.status || 'unpaid'}
                         </span>
                       </td>
@@ -655,7 +769,7 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
                           </button>
                           <button
                             className="btn-icon btn-delete"
-                            onClick={() => handleDelete(payroll._id)}
+                            onClick={() => handleDelete(payroll._id || payroll.id)}
                             title="Delete"
                           >
                             <Trash2 size={16} />
@@ -663,7 +777,7 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
                           {payroll.status !== 'paid' && (
                             <button
                               className="btn-icon btn-pay"
-                              onClick={() => handleMarkAsPaid(payroll._id)}
+                              onClick={() => handleMarkAsPaid(payroll._id || payroll.id)}
                               title="Mark as Paid"
                             >
                               <DollarSign size={16} />
@@ -679,6 +793,7 @@ const matchesEmployee = !filters.employee || employeeId === filters.employee;
           </table>
         </div>
       </div>
+
 
       {/* Pagination */}
       {totalPages > 1 && (
